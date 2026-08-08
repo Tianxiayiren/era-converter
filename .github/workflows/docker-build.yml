@@ -74,8 +74,12 @@ jobs:
 
       - name: Run container health check
         run: |
-          docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-          docker run -d --name test-container -p 8080:80 ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          # GitHub repository names are case-insensitive, but Docker image
+          # references must be lowercase (e.g. Tianxiayiren/era-converter)
+          IMAGE="${{ env.REGISTRY }}/${{ github.repository }}"
+          IMAGE="${IMAGE,,}"
+          docker pull "$IMAGE"
+          docker run -d --name test-container -p 8080:80 "$IMAGE"
           sleep 5
           docker exec test-container wget --quiet --tries=1 --spider http://localhost/index.html || exit 1
           echo "✓ Container health check passed"

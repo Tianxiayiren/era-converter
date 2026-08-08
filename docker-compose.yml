@@ -1,0 +1,25 @@
+version: '3.9'
+
+services:
+  era-converter:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: era-converter
+    ports:
+      - "8080:80"
+    environment:
+      - TZ=Asia/Shanghai
+    restart: unless-stopped
+    networks:
+      - era-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/index.html"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+networks:
+  era-network:
+    driver: bridge

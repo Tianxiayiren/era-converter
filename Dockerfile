@@ -1,5 +1,5 @@
-# Lightweight production image using nginx (alpine: includes busybox wget
-# for HEALTHCHECK; Debian-based nginx images ship without wget/curl).
+# Lightweight production image using nginx (alpine ships with curl, which
+# the HEALTHCHECK uses; Debian-based nginx images ship without wget/curl).
 # Override BASE_IMAGE when Docker Hub is unreachable, e.g.:
 #   docker build --build-arg BASE_IMAGE=docker.m.daocloud.io/library/nginx:alpine .
 ARG BASE_IMAGE=nginx:alpine
@@ -19,9 +19,9 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 # Expose port
 EXPOSE 80
 
-# Health check (busybox wget syntax)
+# Health check
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD wget -q -O /dev/null http://localhost/index.html || exit 1
+  CMD curl -fsS http://localhost/index.html > /dev/null || exit 1
 
 # Start nginx
 CMD ["nginx", "-g", "daemon off;"]

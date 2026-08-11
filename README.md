@@ -1,13 +1,13 @@
 # 公历·年号转换器 (Era Converter)
 
-**Chinese Imperial Era ↔ Gregorian Calendar Converter**
+**Chinese Imperial Era ↔ Gregorian Calendar Converter** — **v1.1.0**
 
-A lightweight static web application for converting between Chinese imperial era names (年号) and Gregorian calendar years. It covers historical nianhaos from **140 BCE (建元) to 1949 CE (民国 38 年)**, including concurrent dynasties, interrupted-then-resumed eras (纪年续接), private in-territory eras, and modern special regimes (太平天国, 伪满洲国, 民国, 洪宪).
+A lightweight static web application for converting between Chinese imperial era names (年号) and Gregorian calendar years. It covers historical nianhaos from **140 BCE (建元) to 1949 CE (民国 38 年)**, including concurrent dynasties, interrupted-then-resumed eras (纪年续接), private in-territory eras, and modern special regimes (太平天国, 伪满洲国, 民国, 洪宪). Currently contains **747 era records across 72 dynasties / regimes**.
 
 ## Features
 
 - 🔄 **Bidirectional Conversion** – Gregorian ↔ Imperial Era, both directions
-- 📚 **Comprehensive Database** – 700+ era records across 70+ dynasties / regimes
+- 📚 **Comprehensive Database** – 747 era records across 72 dynasties / regimes
 - 🎯 **Ganzhi Support** – Chinese sexagenary cycle (干支) display for every year
 - 🏛️ **Multi-Dynasty Support** – Concurrent dynasties sorted by 正统 order; handles 纪年续接 (era numbering resumes after interruption, e.g. 渤海大兴 785 续作四十九年, 高昌延和十八年 619) and 私行境内 eras coexisting with 中原正朔 (e.g. 吴越天宝 908–920)
 - 📜 **Source-Cited Notes** – Era-change notes quote original historical sources with volume (卷次) references (see [Data Sources](#data-sources))
@@ -154,7 +154,7 @@ Image automatically available at:
 
 ### Data
 - **data.js** – 747 era records across 72 dynasties (~73KB)
-- **LXGWWenKai-subset.woff2** – Custom font subset (200KB)
+- **LXGWWenKai-subset.woff2** – Custom font subset (356KB; regenerated 2026-08-11 to cover all CJK characters in notes — 1516 glyphs vs 965 previously)
 - **images-12-logo-red3.png** – Logo asset
 
 ## File Structure
@@ -163,7 +163,7 @@ Image automatically available at:
 era-converter/
 ├── index.html                  # Main HTML file (app + notes)
 ├── data.js                     # Era name database
-├── test.js                     # Assertion test suite (950+ checks)
+├── test.js                     # Assertion test suite (966 checks)
 ├── nginx.conf                  # Web server config
 ├── Dockerfile                  # Container definition
 ├── docker-compose.yml          # Compose orchestration
@@ -228,7 +228,7 @@ era-converter/
 
 ## Changelog
 
-### 2026-08-11
+### v1.1.0 (2026-08-11)
 - 高昌延和纪年续接（延和十八年=619、十九年=620），重光改元月=二月；新增专属 notes
 - 吴越天宝延至 908–920（据《十国春秋》卷78），天宝/宝大/宝正专属 notes
 - 西夏乾定 note（据张林《略论西夏年号与改元》、《西夏书事》）
@@ -236,6 +236,7 @@ era-converter/
 - 弘光 note 增补（据戴名世《弘光朝偽東宮偽后及黨禍紀略》）
 - 永历改元月改为十月（据王夫之《永历实录》）
 - 公历→年号结果栏可点击跳转年号→公历
+- 重新生成霞鹜文楷子集字体（`LXGWWenKai-subset.woff2`），覆盖全部页面 CJK 字符：965 → 1516 glyphs（218KB → 356KB）
 
 ### v1.0.0
 - Initial release

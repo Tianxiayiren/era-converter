@@ -335,8 +335,25 @@
     return "公元" + y + "年";
   }
   function rangeOf(e){
-    if (e.years === null) return fmtY(e.start) + " 起";
-    return fmtY(e.start) + " — " + fmtY(e.start + e.years - 1);
+    // 续编号（eraYear>1）＝年号中断后再启的纪年续接（如高昌延和 602–613 复启 619–620、渤海大兴 737–773 复启 785–793）。
+    // 属续接组（同朝同名、任一条续编号>1）时按组求整体起讫；否则按本条单独计算（如唐上元 674/760 两度独立使用，各自起讫）。
+    var chain = false;
+    for (var i = 0; i < ERAS.length; i++){
+      var r = ERAS[i];
+      if (r.dynasty === e.dynasty && r.name === e.name && r.eraYear > 1){ chain = true; break; }
+    }
+    if (!chain) return (e.years === null ? fmtY(e.start) + " 起" : fmtY(e.start) + " — " + fmtY(e.start + e.years - 1));
+    var s = e.start, en = null, unbounded = false;
+    for (var i = 0; i < ERAS.length; i++){
+      var r = ERAS[i];
+      if (r.dynasty !== e.dynasty || r.name !== e.name) continue;
+      if (r.start < s) s = r.start;
+      if (r.years === null){ unbounded = true; continue; }
+      var re = r.start + r.years - 1;
+      if (en === null || re > en) en = re;
+    }
+    if (unbounded || en === null) return fmtY(s) + " 起";
+    return fmtY(s) + " — " + fmtY(en);
   }
   // 改元月 → 中文（1→正月、8→八月、"闰5"→闰五月）
   function cnMonth(m){

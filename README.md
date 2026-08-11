@@ -2,17 +2,19 @@
 
 **Chinese Imperial Era ↔ Gregorian Calendar Converter**
 
-A lightweight static web application for converting between Chinese imperial era names and Gregorian calendar years, with support for historical nianhaos (年号) spanning from 140 BCE to 1949 CE.
+A lightweight static web application for converting between Chinese imperial era names (年号) and Gregorian calendar years. It covers historical nianhaos from **140 BCE (建元) to 1949 CE (民国 38 年)**, including concurrent dynasties, interrupted-then-resumed eras (纪年续接), private in-territory eras, and modern special regimes (太平天国, 伪满洲国, 民国, 洪宪).
 
 ## Features
 
-- 🔄 **Bidirectional Conversion** – Gregorian ↔ Imperial Era
-- 📚 **Comprehensive Database** – 2,000+ historical era names across 200+ dynasties
-- 🎯 **Ganzhi Support** – Chinese sexagenary cycle (干支) display
-- 🏛️ **Multi-Dynasty Support** – Handles concurrent dynasties and complex transitions
+- 🔄 **Bidirectional Conversion** – Gregorian ↔ Imperial Era, both directions
+- 📚 **Comprehensive Database** – 700+ era records across 70+ dynasties / regimes
+- 🎯 **Ganzhi Support** – Chinese sexagenary cycle (干支) display for every year
+- 🏛️ **Multi-Dynasty Support** – Concurrent dynasties sorted by 正统 order; handles 纪年续接 (era numbering resumes after interruption, e.g. 渤海大兴 785 续作四十九年, 高昌延和十八年 619) and 私行境内 eras coexisting with 中原正朔 (e.g. 吴越天宝 908–920)
+- 📜 **Source-Cited Notes** – Era-change notes quote original historical sources with volume (卷次) references (see [Data Sources](#data-sources))
+- 🖱️ **Click-to-Jump** – Gregorian → Era results jump directly to the Era → Gregorian conversion with the year pre-filled
 - 📱 **Responsive Design** – Works on desktop, tablet, and mobile
-- ⚡ **Zero Dependencies** – Pure vanilla JavaScript
-- 🎨 **Traditional Chinese Aesthetic** – Custom font (LXGW WenKai)
+- ⚡ **Zero Dependencies** – Pure vanilla JavaScript, no frameworks
+- 🎨 **Traditional Chinese Aesthetic** – Custom font (LXGW WenKai 霞鹜文楷)
 
 ## Quick Start
 
@@ -20,7 +22,7 @@ A lightweight static web application for converting between Chinese imperial era
 
 ```bash
 # Clone repository
-git clone https://github.com/YOUR_USERNAME/era-converter.git
+git clone https://github.com/Tianxiayiren/era-converter.git
 cd era-converter
 
 # Serve with any HTTP server
@@ -47,10 +49,8 @@ Access at: **http://localhost:8080**
 
 ### GitHub Pages
 
-Push to GitHub and enable Pages:
-- Go to **Settings** → **Pages**
-- Deploy from: `main` branch, `/root` folder
-- Access at: `https://YOUR_USERNAME.github.io/era-converter`
+The site is deployed automatically by GitHub Actions (`pages.yml`) on every push to `main`.
+- Live site: **https://tianxiayiren.github.io/era-converter/**
 
 ## Docker Deployment Options
 
@@ -61,8 +61,8 @@ docker compose up -d
 
 ### Option 2: GitHub Container Registry (GHCR)
 ```bash
-docker pull ghcr.io/YOUR_USERNAME/era-converter:latest
-docker run -d -p 8080:80 ghcr.io/YOUR_USERNAME/era-converter:latest
+docker pull ghcr.io/tianxiayiren/era-converter:latest
+docker run -d -p 8080:80 ghcr.io/tianxiayiren/era-converter:latest
 ```
 
 ### Option 3: Production Server
@@ -71,10 +71,10 @@ docker run -d -p 8080:80 ghcr.io/YOUR_USERNAME/era-converter:latest
 ssh user@your-server.com
 
 # Pull and run
-docker pull ghcr.io/YOUR_USERNAME/era-converter:latest
+docker pull ghcr.io/tianxiayiren/era-converter:latest
 docker run -d --name era-converter -p 80:80 \
   --restart unless-stopped \
-  ghcr.io/YOUR_USERNAME/era-converter:latest
+  ghcr.io/tianxiayiren/era-converter:latest
 ```
 
 ### Option 4: Kubernetes
@@ -96,7 +96,7 @@ spec:
     spec:
       containers:
       - name: web
-        image: ghcr.io/YOUR_USERNAME/era-converter:latest
+        image: ghcr.io/tianxiayiren/era-converter:latest
         ports:
         - containerPort: 80
         livenessProbe:
@@ -120,73 +120,76 @@ EOF
 
 ## CI/CD Pipeline
 
-![Docker Build](https://github.com/YOUR_USERNAME/era-converter/actions/workflows/docker-build.yml/badge.svg)
+![Docker Build](https://github.com/Tianxiayiren/era-converter/actions/workflows/docker-build.yml/badge.svg)
 
 ### Automated Workflows
 
-- **docker-build.yml** – Automatic Docker image build & push to GHCR on every push
-- **deploy-pages.yml** – Deploy static site to GitHub Pages
+- **docker-build.yml** – Build & push Docker image to GHCR on every push, then run a container health check
+- **pages.yml** – Deploy static site to GitHub Pages on every push
 
 ### Push to Deploy
 
 ```bash
-# Push to main → Docker image builds automatically
+# Push to main → Docker image builds & Pages deploys automatically
 git add .
 git commit -m "Update content"
 git push origin main
-
-# Create release → Automatic version tag
-git tag v1.0.0
-git push origin v1.0.0
 ```
 
 Image automatically available at:
-- `ghcr.io/YOUR_USERNAME/era-converter:latest`
-- `ghcr.io/YOUR_USERNAME/era-converter:v1.0.0`
+- `ghcr.io/tianxiayiren/era-converter:latest`
 
 ## Architecture
 
 ### Frontend
-- **HTML5** – Semantic markup
-- **CSS3** – Custom styling with CSS variables
-- **Vanilla JavaScript** – No frameworks, ~15KB minified
+- **HTML5 / CSS3** – Semantic markup, custom styling with CSS variables
+- **Vanilla JavaScript** – No frameworks, single self-contained `index.html`
 
 ### Backend (Docker)
-- **nginx** – Lightweight web server (~40MB)
+- **nginx:alpine** – Lightweight web server
 - **Gzip Compression** – Auto-compress text assets
-- **Long-term Caching** – 1-year cache for static files
+- **Long-term Caching** – 1-year cache for static assets
 - **Security Headers** – X-Frame-Options, X-Content-Type-Options, etc.
-- **Health Checks** – Built-in container health monitoring
+- **Health Check** – `curl`-based container health monitoring (`nginx:alpine` ships curl)
 
 ### Data
-- **data.js** – 2,000+ historical era records (70KB)
+- **data.js** – 747 era records across 72 dynasties (~73KB)
 - **LXGWWenKai-subset.woff2** – Custom font subset (200KB)
-- **images-12-logo-red3.png** – Logo asset (18KB)
+- **images-12-logo-red3.png** – Logo asset
 
 ## File Structure
 
 ```
 era-converter/
-├── index.html                  # Main HTML file
+├── index.html                  # Main HTML file (app + notes)
 ├── data.js                     # Era name database
+├── test.js                     # Assertion test suite (950+ checks)
 ├── nginx.conf                  # Web server config
 ├── Dockerfile                  # Container definition
 ├── docker-compose.yml          # Compose orchestration
-├── .dockerignore               # Build exclusions
 ├── .github/
 │   └── workflows/
-│       ├── docker-build.yml    # CI/CD build pipeline
-│       └── deploy-pages.yml    # GitHub Pages deployment
+│       ├── docker-build.yml    # GHCR build + health check
+│       └── pages.yml           # GitHub Pages deployment
 ├── DEPLOYMENT.md               # Docker deployment guide
-├── GITHUB_DEPLOYMENT.md        # GitHub/CI-CD guide
+├── GITHUB_DEPLOYMENT.md        # GitHub / CI-CD guide
+├── CHECKLIST.md                # Setup checklist
+├── QUICKSTART.md               # Quick start guide
 └── README.md                   # This file
 ```
 
+## Data Sources
+
+- **主干数据（汉—清）**：经与中国台湾《重编国语辞典修订本》附录《中国历代年号表》逐条程序化对照核实，该表与方诗铭《中国历史纪年表》口径一致
+- **改元年月**：以方诗铭《中国历史纪年表》为基础，参照各正史本纪与《资治通鉴》对勘得出
+- **各朝改元 notes 引据**（引原文+卷次）：汉书、后汉书、三国志、晋书、宋书、魏书、梁书、南史、北史、隋书、旧唐书、旧五代史、新五代史、宋史、辽史、金史、元史、明史、清史稿，以及十国春秋、十六国春秋、西夏书事、永历实录（王夫之）、弘光朝偽東宮偽后及黨禍紀略（戴名世）等
+- **近代年号**：民国（孙文改元通告）、洪宪（政事堂奉申令）、伪满洲国康德、太平天国（1851 闰八月初一建元）等
+
 ## Performance
 
-- **Image Size** – ~50MB (nginx base + assets)
+- **Image Size** – ~55MB (nginx:alpine + assets)
 - **Load Time** – <1s (with caching)
-- **Compression** – Gzip enabled (JS/CSS ~70% smaller)
+- **Compression** – Gzip enabled
 - **Caching** – 1-year TTL for static assets
 
 ## Browser Support
@@ -195,12 +198,6 @@ era-converter/
 - Firefox 88+
 - Safari 14+
 - Mobile browsers (iOS Safari, Chrome Android)
-
-## Data Sources
-
-- 汉—清朝年号：中国台湾"教育部"《国语辞典》附录《中国历代年号表》
-- 改元月份：方诗铭《中国历史纪年表》及《资治通鉴》对勘
-- 十六国至南北朝：《十国春秋》、《北周史稿》等历史文献
 
 ## Contributing
 
@@ -212,18 +209,15 @@ era-converter/
 
 ## License
 
-This project is licensed under the MIT License – see LICENSE file for details.
-
-Data from publicly available historical records; historical information can be freely cited.
+页面设计、程序代码及数据编排受版权保护，版权所有 © 2026 Jingchao Ye，保留一切权利；未经许可不得用于商业发行或转售。年号、干支、公历年份等历史纪年信息属于客观历史事实，可自由检索与引用。
 
 ## Deployment Status
 
 | Platform | Status | URL |
 |----------|--------|-----|
-| GitHub Pages | ✓ Ready | https://YOUR_USERNAME.github.io/era-converter |
-| Docker Hub | ○ Optional | docker.io/YOUR_USERNAME/era-converter |
-| GHCR | ✓ Active | ghcr.io/YOUR_USERNAME/era-converter |
-| Kubernetes | ✓ Ready | See README → Kubernetes section |
+| GitHub Pages | ✓ Live | https://tianxiayiren.github.io/era-converter |
+| GHCR | ✓ Active | ghcr.io/tianxiayiren/era-converter |
+| Docker Hub | — | Not published |
 
 ## Support
 
@@ -233,6 +227,15 @@ Data from publicly available historical records; historical information can be f
 - 💬 Discussions welcome
 
 ## Changelog
+
+### 2026-08-11
+- 高昌延和纪年续接（延和十八年=619、十九年=620），重光改元月=二月；新增专属 notes
+- 吴越天宝延至 908–920（据《十国春秋》卷78），天宝/宝大/宝正专属 notes
+- 西夏乾定 note（据张林《略论西夏年号与改元》、《西夏书事》）
+- 新增太平天国年号（1851 闰八月初一建元，1864 天京陷落）
+- 弘光 note 增补（据戴名世《弘光朝偽東宮偽后及黨禍紀略》）
+- 永历改元月改为十月（据王夫之《永历实录》）
+- 公历→年号结果栏可点击跳转年号→公历
 
 ### v1.0.0
 - Initial release

@@ -193,7 +193,8 @@
   /* ---------- 年号总表：排序 + 改元详情展开 ---------- */
   thead th[data-key]{ cursor: pointer; user-select: none; }
   thead th[data-key]:hover{ color: var(--vermillion); }
-  thead th .sort-arrow{ font-size: 11px; color: var(--vermillion); margin-left: 3px; }
+  thead th .sort-arrow{ font-size: 11px; color: var(--ink-soft); margin-left: 3px; }
+  thead th .sort-arrow.active{ color: var(--vermillion); font-weight: 700; }
   td.era-td.has-note{ cursor: pointer; }
   td.era-td.has-note:hover{ color: var(--vermillion-dark); }
   td.era-td .exp-trigger{
@@ -303,7 +304,7 @@
         <table>
           <thead>
             <tr>
-              <th data-key="dynasty">朝代<span class="sort-arrow"></span></th><th data-key="emperor">皇帝<span class="sort-arrow"></span></th><th data-key="name">年号<span class="sort-arrow"></span></th><th data-key="start">元年<span class="sort-arrow"></span></th><th data-key="end">末年<span class="sort-arrow"></span></th><th data-key="years">年数<span class="sort-arrow"></span></th><th data-key="month">改元<span class="sort-arrow"></span></th>
+              <th data-key="dynasty">朝代<span class="sort-arrow">↕</span></th><th data-key="emperor">皇帝<span class="sort-arrow">↕</span></th><th data-key="name">年号<span class="sort-arrow">↕</span></th><th data-key="start">元年<span class="sort-arrow">↕</span></th><th data-key="end">末年<span class="sort-arrow">↕</span></th><th data-key="years">年数<span class="sort-arrow">↕</span></th><th data-key="month">改元<span class="sort-arrow">↕</span></th>
             </tr>
           </thead>
           <tbody id="tableBody"></tbody>
@@ -1674,7 +1675,9 @@
       if (tableSortKey === key){ tableSortDir = -tableSortDir; }
       else { tableSortKey = key; tableSortDir = 1; }
       document.querySelectorAll("#p3 thead th[data-key]").forEach(function(t){
-        t.querySelector(".sort-arrow").textContent = (t === th) ? (tableSortDir > 0 ? "▲" : "▼") : "";
+        var a = t.querySelector(".sort-arrow");
+        a.classList.toggle("active", t === th);
+        a.textContent = (t === th) ? (tableSortDir > 0 ? "▲" : "▼") : "↕";
       });
       renderTable(tableFilter.value.trim());
     });

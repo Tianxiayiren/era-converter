@@ -1,6 +1,6 @@
 # 公历·年号转换器 (Era Converter)
 
-**Chinese Imperial Era ↔ Gregorian Calendar Converter** — **v1.1.0**
+**Chinese Imperial Era ↔ Gregorian Calendar Converter** — **v1.2.0**
 
 A lightweight static web application for converting between Chinese imperial era names (年号) and Gregorian calendar years. It covers historical nianhaos from **140 BCE (建元) to 1949 CE (民国 38 年)**, including concurrent dynasties, interrupted-then-resumed eras (纪年续接), private in-territory eras, and modern special regimes (太平天国, 伪满洲国, 民国, 洪宪). Currently contains **747 era records across 72 dynasties / regimes**.
 
@@ -12,6 +12,8 @@ A lightweight static web application for converting between Chinese imperial era
 - 🏛️ **Multi-Dynasty Support** – Recorded era names far beyond mainstream dynasties, including Gaochang Kingdom, Balhae Kingdom, Local dynasties of Yunnan such as Nanzhao and Dali...   
 - 📜 **Source-Cited Notes** – Era-change notes quote original historical sources with volume (卷次) references (see [Data Sources](#data-sources))
 - 🖱️ **Click-to-Jump** – Gregorian → Era results jump directly to the Era → Gregorian conversion with the year pre-filled
+- 🔃 **Sortable Table** – Click column headers in the master table to sort by dynasty, emperor, era, start/end year, duration, or era-change month (toggle ascending/descending)
+- 📖 **Expandable Notes** – Click an era name in the master table to expand its source-cited era-change note inline (引原文 + 卷次)
 - 📱 **Responsive Design** – Works on desktop, tablet, and mobile
 - ⚡ **Zero Dependencies** – Pure vanilla JavaScript, no frameworks
 - 🎨 **Traditional Chinese Aesthetic** – Custom font (LXGW WenKai 霞鹜文楷)
@@ -227,6 +229,11 @@ era-converter/
 - 💬 Discussions welcome
 
 ## Changelog
+
+### v1.2.0 (2026-08-12)
+- 年号总表支持表头排序：朝代 / 皇帝 / 年号 / 元年 / 末年 / 年数 / 改元各列点击升、降序切换（元年按数值排序、公元前正确前置，空值恒排最后）
+- 年号总表可展开改元说明：有说明的行显示「＋」，点击展开/收起该年号引原文 + 卷次的改元详注
+- 改元说明逻辑重构为可复用 `noteOf(e)`，「年号 → 公历」与「年号总表」两面板共用，行为与原版完全一致
 
 ### v1.1.0 (2026-08-11)
 - 高昌延和纪年续接（延和十八年=619、十九年=620），重光改元月=二月；新增专属 notes

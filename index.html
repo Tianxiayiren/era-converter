@@ -186,10 +186,27 @@
     padding: 10px 14px; border-bottom: 2px solid var(--line);
   }
   tbody td{ padding: 8px 14px; border-bottom: 1px solid #efe7d4; }
-  tbody tr:nth-child(even){ background: #fbf7ec; }
+  tbody tr:nth-child(even):not(.detail-row){ background: #fbf7ec; }
   tbody tr:hover{ background: #f6ecd7; }
   td.era-td{ font-weight: 700; color: var(--vermillion); }
   td.bce{ color: var(--jade); }
+  /* ---------- 年号总表：排序 + 改元详情展开 ---------- */
+  thead th[data-key]{ cursor: pointer; user-select: none; }
+  thead th[data-key]:hover{ color: var(--vermillion); }
+  thead th .sort-arrow{ font-size: 11px; color: var(--vermillion); margin-left: 3px; }
+  td.era-td.has-note{ cursor: pointer; }
+  td.era-td.has-note:hover{ color: var(--vermillion-dark); }
+  td.era-td .exp-trigger{
+    display: inline-block; width: 15px; height: 15px; line-height: 14px; text-align: center;
+    border: 1px solid var(--line); border-radius: 3px; font-size: 11px; color: var(--jade);
+    margin-left: 6px; font-weight: 700; vertical-align: 1px; background: #fffdf7;
+  }
+  td.era-td.expanded .exp-trigger{ color: var(--vermillion); border-color: var(--vermillion); }
+  tr.detail-row > td{
+    background: #f6f0dd; border-bottom: 1px solid #efe7d4; padding: 10px 20px;
+    font-size: 13px; line-height: 1.8; color: var(--ink);
+  }
+  tr.detail-row:hover > td{ background: #f6f0dd; }
 
   footer{
     max-width: 960px; margin: 30px auto 0; padding: 18px 20px;
@@ -279,13 +296,14 @@
     <div class="card table-card">
       <div class="table-toolbar">
         <input type="text" id="tableFilter" placeholder="搜索：朝代 / 皇帝 / 年号" autocomplete="off">
+        <div class="hint" style="margin:0;">点表头排序 · 点「年号」展开改元说明</div>
         <div class="hint" style="margin:0;" id="tableCount"></div>
       </div>
       <div class="table-scroll">
         <table>
           <thead>
             <tr>
-              <th>朝代</th><th>皇帝</th><th>年号</th><th>元年</th><th>末年</th><th>年数</th><th>改元</th>
+              <th data-key="dynasty">朝代<span class="sort-arrow"></span></th><th data-key="emperor">皇帝<span class="sort-arrow"></span></th><th data-key="name">年号<span class="sort-arrow"></span></th><th data-key="start">元年<span class="sort-arrow"></span></th><th data-key="end">末年<span class="sort-arrow"></span></th><th data-key="years">年数<span class="sort-arrow"></span></th><th data-key="month">改元<span class="sort-arrow"></span></th>
             </tr>
           </thead>
           <tbody id="tableBody"></tbody>
@@ -813,23 +831,7 @@
     renderToYear();
   }
 
-  function renderToYear(){
-    if (!selected){
-      resultToYear.innerHTML = '<div class="result-empty">请先在上方搜索并选择一个年号。</div>';
-      return;
-    }
-    var name = selected.e.name, dyn = selected.e.dynasty;
-    var n = parseInt(eraYearInput.value, 10);
-    if (isNaN(n)){
-      resultToYear.innerHTML = '<div class="result-empty">请输入年号纪年（第几年）。</div>';
-      return;
-    }
-    var hit = resolveEraN(name, dyn, n);
-    if (!hit){
-      resultToYear.innerHTML = '<div class="result-empty">' + esc(name) + '年号第 ' + n + ' 年不存于行用期（纪年段：' + esc(eraNRangeText(eraNSegments(name, dyn))) + '）。</div>';
-      return;
-    }
-    var e = hit.e, yr = hit.yr;
+  function noteOf(e){
     var note = "";
     if (e.name === "民国") note = '民国纪年自 1912 年起，至 1949 年（民国 38 年）止，此后不再沿用。民国改元通告（孙文，1912 年 1 月 2 日）：「各省都督鉴：中华民国改用阳历，以黄帝纪元四千六百九年十一月十三日，为中华民国元年元旦。经由各省代表团议决，由本总统颁行。订定于阳历正月十五日，补祝新年。请布告。孙文。」';
     if (e.name === "洪宪") note = '洪宪元年 = 1916 年。据政事堂奉申令（中华民国四年十二月三十一日，国卿陆徵祥）「明年改为洪宪元年」——即 1915 年 12 月 31 日下令、洪宪元年自 1916 年正月起用；袁世凯称帝仅三月余，1916 年 3 月 22 日宣布撤销帝制。';
@@ -1551,7 +1553,27 @@
     if (e.name === "天会" && e.dynasty === "北汉") note = '天会为北汉睿宗刘钧年号（957–974）；旧五代史不载（刘崇传末称刘承钧事迹「具皇家日曆」），据《资治通鉴》卷293「显德四年正月己丑朔，北漢大赦，改元天会」。';
     if (e.name === "广运" && e.dynasty === "北汉") note = '广运为北汉英武帝刘继元年号（974–979）；旧五代史不载，据《十国春秋》等，天会十八年（974）正月改元广运，979 年五月北汉亡。';
     if (e.name === "仁寿" && e.dynasty === "隋") note = '仁寿为隋文帝年号（601–604）；据《隋书·高祖纪下》卷2，仁寿元年（601）正月乙酉朔「大赦，改元」；仁寿四年（604）七月文帝崩，炀帝即位后于次年正月改元大业。';
+    return note;
+  }
 
+  function renderToYear(){
+    if (!selected){
+      resultToYear.innerHTML = '<div class="result-empty">请先在上方搜索并选择一个年号。</div>';
+      return;
+    }
+    var name = selected.e.name, dyn = selected.e.dynasty;
+    var n = parseInt(eraYearInput.value, 10);
+    if (isNaN(n)){
+      resultToYear.innerHTML = '<div class="result-empty">请输入年号纪年（第几年）。</div>';
+      return;
+    }
+    var hit = resolveEraN(name, dyn, n);
+    if (!hit){
+      resultToYear.innerHTML = '<div class="result-empty">' + esc(name) + '年号第 ' + n + ' 年不存于行用期（纪年段：' + esc(eraNRangeText(eraNSegments(name, dyn))) + '）。</div>';
+      return;
+    }
+    var e = hit.e, yr = hit.yr;
+    var note = noteOf(e);
     resultToYear.innerHTML =
       '<div class="big-result">'
       + '<div class="b-era">' + esc(e.name) + ' ' + n + ' ' + eraYearTerm(e, n) + '</div>'
@@ -1584,10 +1606,22 @@
   var tableBody = document.getElementById("tableBody");
   var tableFilter = document.getElementById("tableFilter");
   var tableCount = document.getElementById("tableCount");
+  var tableSortKey = null, tableSortDir = 1;
 
   function ycell(y){
     var txt = (y < 0 ? '公元前 ' + (-y) : '公元 ' + y) + ' · ' + ganZhi(y);
     return y < 0 ? '<span class="bce">' + txt + '</span>' : txt;
+  }
+  // 排序取值：末年、年数为 null（延续/无上限）时返回 null（恒排最后）；改元按月份数值（闰月 +0.5）
+  function sortVal(e, key){
+    if (key === "end") return (e.years === null ? null : e.start + e.years - 1);
+    if (key === "years") return (e.years === null ? null : e.years);
+    if (key === "month"){
+      if (e.month == null) return null;
+      var s = String(e.month);
+      return parseInt(s.replace("闰", ""), 10) + (s.indexOf("闰") === 0 ? 0.5 : 0);
+    }
+    return e[key];
   }
   function renderTable(q){
     var list = ERAS;
@@ -1596,22 +1630,59 @@
         return e.name.indexOf(q) !== -1 || e.dynasty.indexOf(q) !== -1 || e.emperor.indexOf(q) !== -1;
       });
     }
+    if (tableSortKey){
+      var key = tableSortKey, dir = tableSortDir;
+      list = list.slice().sort(function(a, b){
+        var va = sortVal(a, key), vb = sortVal(b, key);
+        var na = va === null || va === undefined, nb = vb === null || vb === undefined;
+        if (na || nb) return (na && nb) ? 0 : (na ? 1 : -1);   // 空值恒排最后
+        if (typeof va === "number" && typeof vb === "number") return (va - vb) * dir;
+        return String(va).localeCompare(String(vb), "zh") * dir;
+      });
+    }
     var html = list.map(function(e){
       var end = e.years === null ? null : e.start + e.years - 1;
-      return '<tr>'
-        + '<td>' + esc(e.dynasty) + '</td>'
+      var note = noteOf(e);
+      var cells = '<td>' + esc(e.dynasty) + '</td>'
         + '<td>' + esc(e.emperor) + '</td>'
-        + '<td class="era-td">' + esc(e.name) + '</td>'
+        + '<td class="era-td' + (note ? ' has-note' : '') + '">' + esc(e.name) + (note ? '<span class="exp-trigger">＋</span>' : '') + '</td>'
         + '<td>' + ycell(e.start) + '</td>'
         + '<td>' + (end === null ? '' : ycell(end)) + '</td>'
         + '<td>' + (e.years === null ? '延续' : e.years) + '</td>'
-        + '<td>' + (preTaichu(e) ? '<span title="太初元年（前104）改历前行用颛顼历，以十月为岁首，改元于岁首十月">颛顼历' + esc(cnMonth(e.month)) + '</span>' : (e.month != null ? esc(cnMonth(e.month)) : '')) + '</td>'
-        + '</tr>';
+        + '<td>' + (preTaichu(e) ? '<span title="太初元年（前104）改历前行用颛顼历，以十月为岁首，改元于岁首十月">颛顼历' + esc(cnMonth(e.month)) + '</span>' : (e.month != null ? esc(cnMonth(e.month)) : '')) + '</td>';
+      return (note ? '<tr class="has-detail">' : '<tr>') + cells + '</tr>'
+        + (note ? '<tr class="detail-row" style="display:none"><td colspan="7">' + esc(note) + '</td></tr>' : '');
     }).join("");
     tableBody.innerHTML = html;
     tableCount.textContent = "共 " + list.length + " 条";
   }
   tableFilter.addEventListener("input", function(){ renderTable(tableFilter.value.trim()); });
+
+  // 表头排序：点同一列切换升/降序，点新列重新升序
+  document.querySelectorAll("#p3 thead th[data-key]").forEach(function(th){
+    th.addEventListener("click", function(){
+      var key = th.getAttribute("data-key");
+      if (tableSortKey === key){ tableSortDir = -tableSortDir; }
+      else { tableSortKey = key; tableSortDir = 1; }
+      document.querySelectorAll("#p3 thead th[data-key]").forEach(function(t){
+        t.querySelector(".sort-arrow").textContent = (t === th) ? (tableSortDir > 0 ? "▲" : "▼") : "";
+      });
+      renderTable(tableFilter.value.trim());
+    });
+  });
+
+  // 展开/收起改元详情：点击有说明的年号行切换
+  tableBody.addEventListener("click", function(ev){
+    var tr = ev.target.closest("tr.has-detail");
+    if (!tr) return;
+    var detail = tr.nextElementSibling;
+    if (!detail || detail.className !== "detail-row") return;
+    var show = detail.style.display === "none";
+    detail.style.display = show ? "" : "none";
+    tr.classList.toggle("expanded", show);
+    var trig = tr.querySelector(".exp-trigger");
+    if (trig) trig.textContent = show ? "−" : "＋";
+  });
 
   /* ============ 初始化 ============ */
   document.getElementById("statEras").textContent = ERAS.length;

@@ -9,7 +9,7 @@ A lightweight static web application for converting between Chinese imperial era
 - 🔄 **Bidirectional Conversion** – Gregorian ↔ Imperial Era, both directions
 - 📚 **Comprehensive Database** – 747 era records across 72 dynasties / regimes
 - 🎯 **Ganzhi Support** – Chinese sexagenary cycle (干支) display for every year
-- 🏛️ **Multi-Dynasty Support** – Concurrent dynasties sorted by 正统 order; handles 纪年续接 (era numbering resumes after interruption, e.g. 渤海大兴 785 续作四十九年, 高昌延和十八年 619) and 私行境内 eras coexisting with 中原正朔 (e.g. 吴越天宝 908–920)
+- 🏛️ **Multi-Dynasty Support** – Recorded era names far beyond mainstream dynasties, including Gaochang Kingdom, Balhae Kingdom, Local dynasties of Yunnan such as Nanzhao and Dali...   
 - 📜 **Source-Cited Notes** – Era-change notes quote original historical sources with volume (卷次) references (see [Data Sources](#data-sources))
 - 🖱️ **Click-to-Jump** – Gregorian → Era results jump directly to the Era → Gregorian conversion with the year pre-filled
 - 📱 **Responsive Design** – Works on desktop, tablet, and mobile

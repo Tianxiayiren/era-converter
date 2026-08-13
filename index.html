@@ -24,7 +24,8 @@
     --jade: #3e6b5e;
   }
   *{ box-sizing: border-box; margin: 0; padding: 0; }
-  html,body{ height: 100%; }
+  html{ height: 100%; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+  body{ height: 100%; }
   body{
     font-family: "LXGW WenKai","霞鹜文楷","Kaiti SC","STKaiti","KaiTi","Songti SC","SimSun",serif;
     color: var(--ink);
@@ -76,8 +77,7 @@
 
   /* ---------- 卡片 ---------- */
   .panel{ display: none; }
-  .panel.active{ display: block; animation: fade .25s ease; }
-  @keyframes fade{ from{ opacity: 0; transform: translateY(6px);} to{ opacity:1; transform:none;} }
+  .panel.active{ display: block; }
 
   .card{
     background: var(--card);
@@ -180,6 +180,10 @@
   .table-toolbar input{ width: 260px; }
   .table-scroll{ overflow: auto; max-height: 620px; border-top: 1px solid var(--line); }
   table{ width: 100%; border-collapse: collapse; font-size: 14px; background: var(--card); }
+  /* 年号总表窄屏适配：7 列密集数据在手机(~360px)下逐列挤压会「挤字」，设最小宽度改横向滚动 */
+  .table-scroll table{ min-width: 720px; }
+  .table-scroll thead th, .table-scroll tbody td{ white-space: nowrap; }
+  .table-scroll tr.detail-row td{ white-space: normal; }
   thead th{
     position: sticky; top: 0; background: #f0e6cf; color: var(--ink);
     font-weight: 700; letter-spacing: 1px; text-align: left; z-index: 5;

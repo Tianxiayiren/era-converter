@@ -2,12 +2,12 @@
 
 **Chinese Imperial Era ↔ Gregorian Calendar Converter** — **v1.2.0**
 
-A lightweight static web application for converting between Chinese imperial era names (年号) and Gregorian calendar years. It covers historical nianhaos from **140 BCE (建元) to 1949 CE (民国 38 年)**, including concurrent dynasties, interrupted-then-resumed eras (纪年续接), private in-territory eras, and modern special regimes (太平天国, 伪满洲国, 民国, 洪宪). Currently contains **755 era records across 73 dynasties / regimes**.
+A lightweight static web application for converting between Chinese imperial era names (年号) and Gregorian calendar years. It covers historical nianhaos from **140 BCE (建元) to 1949 CE (民国 38 年)**, including concurrent dynasties, interrupted-then-resumed eras (纪年续接), private in-territory eras, and modern special regimes (太平天国, 伪满洲国, 民国, 洪宪). Currently contains **755 era records across 72 dynasties / regimes**.
 
 ## Features
 
 - 🔄 **Bidirectional Conversion** – Gregorian ↔ Imperial Era, both directions
-- 📚 **Comprehensive Database** – 755 era records across 73 dynasties / regimes
+- 📚 **Comprehensive Database** – 755 era records across 72 dynasties / regimes
 - 🎯 **Ganzhi Support** – Chinese sexagenary cycle (干支) display for every year
 - 🏛️ **Multi-Dynasty Support** – Recorded era names far beyond mainstream dynasties, including Gaochang Kingdom, Balhae Kingdom, Local dynasties of Yunnan such as Nanzhao and Dali...   
 - 📜 **Source-Cited Notes** – Era-change notes quote original historical sources with volume (卷次) references (see [Data Sources](#data-sources))
@@ -155,7 +155,7 @@ Image automatically available at:
 - **Health Check** – `curl`-based container health monitoring (`nginx:alpine` ships curl)
 
 ### Data
-- **data.js** – 755 era records across 73 dynasties (~73KB)
+- **data.js** – 755 era records across 72 dynasties (~73KB)
 - **LXGWWenKai-subset.woff2** – Custom font subset (356KB; regenerated 2026-08-11 to cover all CJK characters in notes — 1516 glyphs vs 965 previously)
 - **images-12-logo-red3.png** – Logo asset
 
@@ -236,6 +236,7 @@ era-converter/
 - 改元说明逻辑重构为可复用 `noteOf(e)`，「年号 → 公历」与「年号总表」两面板共用，行为与原版完全一致
 - 新增南诏隆舜年号：贞明（877–885）、承智（886–888）、大同（889），填补建极（877）至嵯耶（889）间空档（记录数 747 → 750）
 - 新增柔然（蠕蠕）年号五条：永康（466–485）、太平（485–492）、太安（492–505）、始平（506–508）、建昌（508–520），据《北史·蠕蠕传》（记录数 750 → 755，政权数 72 → 73）
+- 更始政权（刘玄）归入西汉（政权数 73 → 72）；更始帝与年号「更始」均归西汉名下，note 引《东观汉记》卷二十三《载记·刘玄》
 
 ### v1.1.0 (2026-08-11)
 - 高昌延和纪年续接（延和十八年=619、十九年=620），重光改元月=二月；新增专属 notes

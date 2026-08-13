@@ -186,7 +186,7 @@
     padding: 10px 14px; border-bottom: 2px solid var(--line);
   }
   tbody td{ padding: 8px 14px; border-bottom: 1px solid #efe7d4; }
-  tbody tr:nth-child(even):not(.detail-row){ background: #fbf7ec; }
+  tbody tr.alt{ background: #fbf7ec; }
   tbody tr:hover{ background: #f6ecd7; }
   td.era-td{ font-weight: 700; color: var(--vermillion); }
   td.bce{ color: var(--jade); }
@@ -1685,7 +1685,7 @@
         return String(va).localeCompare(String(vb), "zh") * dir;
       });
     }
-    var html = list.map(function(e){
+    var html = list.map(function(e, i){
       var end = e.years === null ? null : e.start + e.years - 1;
       var note = noteOf(e);
       var cells = '<td>' + esc(e.dynasty) + '</td>'
@@ -1695,7 +1695,9 @@
         + '<td>' + (end === null ? '' : ycell(end)) + '</td>'
         + '<td>' + (e.years === null ? '延续' : e.years) + '</td>'
         + '<td>' + (preTaichu(e) ? '<span title="太初元年（前104）改历前行用颛顼历，以十月为岁首，改元于岁首十月">颛顼历' + esc(cnMonth(e.month)) + '</span>' : (e.month != null ? esc(cnMonth(e.month)) : '')) + '</td>';
-      return (note ? '<tr class="has-detail">' : '<tr>') + cells + '</tr>'
+      // 斑马纹按数据行交替（i%2），详情行不计入，避免错位
+      var rowClass = (i % 2 === 1 ? 'alt' : '') + (note ? ' has-detail' : '');
+      return '<tr class="' + rowClass.trim() + '">' + cells + '</tr>'
         + (note ? '<tr class="detail-row" style="display:none"><td colspan="7">' + esc(note) + '</td></tr>' : '');
     }).join("");
     tableBody.innerHTML = html;

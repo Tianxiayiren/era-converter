@@ -156,7 +156,7 @@ Image automatically available at:
 
 ### Data
 - **data.js** – 755 era records across 72 dynasties (~73KB)
-- **LXGWWenKai-subset.woff2** – Custom font subset (356KB; regenerated 2026-08-11 to cover all CJK characters in notes — 1516 glyphs vs 965 previously)
+- **LXGWWenKai-subset.woff2** – Custom font subset (381KB; regenerated 2026-08-13 to cover all CJK characters in notes — 1626 glyphs vs 1516 previously)
 - **images-12-logo-red3.png** – Logo asset
 
 ## File Structure

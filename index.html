@@ -435,14 +435,6 @@
         <button class="mini-btn" id="calNextY">下一年</button>
         <button class="mini-btn" id="calNextM">下一月 ▶</button>
       </div>
-      <div class="chips">
-        <span class="lbl">示例：</span>
-        <span class="chip cal-chip" data-cy="-140">公元前140</span>
-        <span class="chip cal-chip" data-cy="1644">1644</span>
-        <span class="chip cal-chip" data-cy="1840">1840</span>
-        <span class="chip cal-chip" data-cy="1912">1912</span>
-        <span class="chip cal-chip" data-cy="1949">1949</span>
-      </div>
       <div id="calNote"></div>
       <div class="cal-head" id="calHead"></div>
       <div class="cal-grid" id="calGrid"></div>
@@ -2479,9 +2471,6 @@
       else { calNote.className = "result-empty"; calNote.innerHTML = "请输入有效年份（公元前140–1949，如：1644、公元前140）。"; calNote.style.display = ""; }
     });
     calMonthSel.addEventListener("change", function(){ gotoCal(calState.y, parseInt(calMonthSel.value, 10)); });
-    document.querySelectorAll(".cal-chip").forEach(function(c){
-      c.addEventListener("click", function(){ gotoCal(parseInt(c.dataset.cy, 10), calState.m); });
-    });
     document.getElementById("calBackBtn").addEventListener("click", function(){ calShowList(); });
     document.getElementById("calYearQBtn").addEventListener("click", function(){ doYearQuery(); });
     calYearQ.addEventListener("keydown", function(ev){ if (ev.key === "Enter") doYearQuery(); });

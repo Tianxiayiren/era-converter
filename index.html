@@ -1,4 +1,19 @@
 <!DOCTYPE html>
+<!--
+  公历·年号转换器（Era Converter）— 中国历代年号与公历对照，含「廖育栋万年历」
+  Copyright (C) 2026 Jingchao Ye
+
+  本程序为自由软件：你可以依据自由软件基金会发布的 GNU 通用公共许可证
+  （第 3 版，或你选择的任何更新版本）条款再分发和/或修改它。
+  本程序按"原样"分发，不附带任何担保；详见 GNU GPL-3.0。
+  许可全文见本目录 LICENSE 文件，或 <https://www.gnu.org/licenses/gpl-3.0.html>。
+
+  万年历历史朔闰历表与历书节气数据改编自
+    ytliu0《中國歷代朔閏表》 <https://github.com/ytliu0/ChineseCalendar>
+    Copyright (C) ytliu0，以 GPL-3.0 发布
+  本站派生数据文件：shuorun-historical.js、shuorun-terms.js（亦依 GPL-3.0）
+  修改说明：解压原表、换算为物理日 JDN、按政权分段、增补承前历表、改历年份保留原月名。
+-->
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -150,6 +165,25 @@
   .item .yr{ font-size: 18px; color: var(--jade); font-weight: 600; }
   .item .sub{ font-size: 12px; color: var(--ink-soft); display: block; }
 
+  /* 万年历政权入口：正方形卡片、一行四栏、左右居中（边距尽量小） */
+  .dyn-grid{
+    display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px; max-width: 920px; margin: 0 auto; padding: 0;
+  }
+  @media (max-width: 720px){
+    .dyn-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  .item.dyn-card{
+    aspect-ratio: 1 / 1; min-height: 110px;
+    flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; gap: 4px; padding: 8px; margin-bottom: 0;
+  }
+  .item.dyn-card .era{ min-width: 0; font-size: 18px; letter-spacing: 1px; }
+  .item.dyn-card .meta{ flex: none; min-width: 0; line-height: 1.4; }
+  .item.dyn-card .meta .dyn{ font-size: 12px; color: var(--ink); }
+  .item.dyn-card .meta .emp{ font-size: 11px; }
+  .item.dyn-card .yr{ font-size: 13px; }
+
   .big-result{
     text-align: center; padding: 22px 10px; border: 1px solid var(--line);
     border-radius: 10px; background: linear-gradient(180deg, #fffdf6, #f8f1e0);
@@ -231,6 +265,56 @@
     .card{ padding: 18px 16px; }
     .item .era{ min-width: 0; }
   }
+
+  /* ---------- 万年历（面板四） ---------- */
+  .cal-toolbar{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:14px; }
+  .mini-btn{
+    padding:8px 14px; font-size:14px; font-family:inherit; letter-spacing:1px;
+    background:var(--card); color:var(--ink); border:1px solid var(--line); border-radius:8px;
+    cursor:pointer; transition:all .15s; white-space:nowrap;
+  }
+  .mini-btn:hover{ border-color:var(--vermillion); color:var(--vermillion); background:#fff7f0; }
+  .mini-btn.primary{
+    background:linear-gradient(180deg,var(--vermillion),var(--vermillion-dark));
+    color:#fdf3e2; border:none; box-shadow:0 2px 6px rgba(138,39,25,.25);
+  }
+  .mini-btn.primary:hover{ color:#fdf3e2; transform:translateY(-1px); }
+  select{
+    padding:10px 12px; font-size:15px; font-family:inherit; border:1px solid var(--line);
+    border-radius:8px; background:#fffdf6; color:var(--ink); outline:none; cursor:pointer;
+  }
+  select:focus{ border-color:var(--vermillion); box-shadow:0 0 0 3px rgba(168,50,34,.12); }
+  .cal-note{ font-size:13px; color:var(--jade); background:rgba(62,107,94,.07); border:1px solid rgba(62,107,94,.25); border-radius:8px; padding:10px 14px; margin-bottom:12px; line-height:1.7; }
+  .cal-head{ text-align:center; margin-bottom:12px; }
+  .cal-head .cal-title{ font-size:26px; font-weight:700; letter-spacing:3px; color:var(--ink); }
+  .cal-head .cal-line{ font-size:13px; color:var(--ink-soft); margin-top:6px; line-height:1.8; }
+  .cal-head .cal-line b{ color:var(--vermillion); font-weight:700; }
+  .cal-grid{ display:grid; grid-template-columns:repeat(7,1fr); gap:6px; }
+  .cal-dow{ text-align:center; font-weight:700; color:var(--ink-soft); padding:4px 0 2px; font-size:13px; letter-spacing:1px; }
+  .cal-dow.sun{ color:var(--vermillion); }
+  .cal-cell{
+    border:1px solid var(--line); border-radius:8px; padding:6px 2px; text-align:center;
+    min-height:62px; background:#fffdf7; display:flex; flex-direction:column; align-items:center; gap:2px;
+  }
+  .cal-cell .d{ font-size:17px; font-weight:700; line-height:1.2; }
+  .cal-cell .ld{ font-size:11px; color:var(--ink-soft); line-height:1.3; }
+  .cal-cell .ld.shuo{ color:var(--vermillion); font-weight:700; }
+  .cal-cell .gz{ font-size:12px; color:var(--jade); }
+  .cal-line.sub{ font-size:12px; color:var(--ink-soft); }
+  .tui{ color:var(--gold); font-size:11px; margin-left:4px; }
+  .cal-cell .jq{ font-size:11px; color:var(--ink-soft); margin-top:auto; line-height:1.4; }
+  .cal-cell .jq.jie{ color:var(--vermillion); font-weight:700; }
+  .cal-cell.today{ border-color:var(--vermillion); box-shadow:0 0 0 2px rgba(168,50,34,.18); background:#fff3ea; }
+  .cal-cell.empty{ background:transparent; border-color:transparent; min-height:62px; }
+  .cal-legend{ font-size:12px; color:var(--ink-soft); margin-top:12px; line-height:1.8; }
+  .cal-legend b{ color:var(--jade); }
+  @media (max-width:560px){
+    .cal-cell{ min-height:50px; padding:4px 1px; }
+    .cal-cell .d{ font-size:14px; }
+    .cal-cell .gz{ font-size:11px; }
+    .cal-cell .jq{ font-size:10px; }
+    .cal-head .cal-title{ font-size:21px; }
+  }
 </style>
 </head>
 <body>
@@ -251,6 +335,7 @@
     <button class="tab active" data-panel="p1">公历 → 年号</button>
     <button class="tab" data-panel="p2">年号 → 公历</button>
     <button class="tab" data-panel="p3">年号总表</button>
+    <button class="tab" data-panel="p4">廖育栋万年历</button>
   </nav>
 
   <!-- ============ 面板一：公历 → 年号 ============ -->
@@ -317,25 +402,82 @@
     </div>
   </section>
 
+  <!-- ============ 面板四：万年历 ============ -->
+  <section class="panel" id="p4">
+    <div class="card">
+      <h2>廖育栋万年历 · 每月每日干支<span class="en">Perpetual Calendar — Ganzhi</span></h2>
+      <div class="hint">日干支按 60 甲子连续纪日（锚点：1949 年 10 月 1 日甲子日）。农历日期按所选政权的<b>历史朔闰历表</b>给出（各政权 -140～1911 年；政权元年正月朔之前按<b>承前历表</b>）；农历月干支依官网表头的<b>月建</b>（改历年份按其月建，如「正(子)」；官网自太初元年（前 104）起标注月干支，此前按同法补注）。1582-10-15 格里改历之前日期用<b>儒略历</b>显示（1582-10 为过渡月），与通行史表一致。输入范围<b>前 140 年（建元元年）至 1949 年</b>，其中历史历表止于 1911 年；超出历表覆盖的月份改用通行历表或天文推算，并逐月标注来源。</div>
+      <div id="calDynView">
+        <div class="hint" style="margin-top:2px;">历史朔闰表因同时代各政权行用各自历法而不同，故<b>先选政权、再查其年月</b>。下表仅列出官網《中國歷代朔閏表》确有所属历表的政权。</div>
+        <div class="hint" style="margin-top:2px;"><b>数据来源与许可</b>：本万年历的历史朔闰历表与历书节气数据，改编自 <b>ytliu0《中國歷代朔閏表》</b>（<a href="https://github.com/ytliu0/ChineseCalendar" target="_blank" rel="noopener">github.com/ytliu0/ChineseCalendar</a>，Copyright © ytliu0，GPL-3.0）；本站派生数据文件 <code>shuorun-historical.js</code>、<code>shuorun-terms.js</code> 依同一许可提供。本工具整体以 <b>GNU GPL-3.0</b> 发布：可自由使用、修改与再分发，但须保留版权与许可声明、标明修改，并以同一许可提供相应源码（本页源码即所发布的 HTML/JS 文件，另见仓库 <code>LICENSE</code>）。</div>
+        <div class="cal-toolbar">
+          <div class="input-wrap" style="min-width:140px; max-width:180px;">
+            <input type="text" id="calYearQ" placeholder="按公历年份查政权" autocomplete="off">
+          </div>
+          <button class="mini-btn primary" id="calYearQBtn">查 询</button>
+          <span style="color:var(--ink-soft);font-size:12px;">输入公历年份 → 列出该年并行政权（各用其历法）</span>
+        </div>
+        <div id="calYearQResult"></div>
+        <div id="calDynList" class="dyn-grid" style="margin-top:8px;"></div>
+      </div>
+      <div id="calCalView" style="display:none;">
+      <div class="cal-toolbar" style="margin-bottom:6px;">
+        <button class="mini-btn" id="calBackBtn">← 政权列表</button>
+        <span id="calDynTitle" style="font-weight:700;"></span>
+      </div>
+      <div class="cal-toolbar">
+        <button class="mini-btn" id="calPrevM">◀ 上一月</button>
+        <button class="mini-btn" id="calPrevY">上一年</button>
+        <div class="input-wrap" style="min-width:130px; max-width:160px;">
+          <input type="text" id="calYear" placeholder="公元前140 – 1949" autocomplete="off">
+        </div>
+        <select id="calMonth"></select>
+        <button class="mini-btn" id="calNextY">下一年</button>
+        <button class="mini-btn" id="calNextM">下一月 ▶</button>
+      </div>
+      <div class="chips">
+        <span class="lbl">示例：</span>
+        <span class="chip cal-chip" data-cy="-140">公元前140</span>
+        <span class="chip cal-chip" data-cy="1644">1644</span>
+        <span class="chip cal-chip" data-cy="1840">1840</span>
+        <span class="chip cal-chip" data-cy="1912">1912</span>
+        <span class="chip cal-chip" data-cy="1949">1949</span>
+      </div>
+      <div id="calNote"></div>
+      <div class="cal-head" id="calHead"></div>
+      <div class="cal-grid" id="calGrid"></div>
+      <div class="cal-legend">
+        格内：大号黑字为<b>公历日</b>，小字为<b>农历日</b>（初一标红），绿字为<b>日干支</b>；红字加粗为“节”，其余为“中气”。节气按当时历法：<b>1645 年前用平气</b>（据官网「曆書節氣」），1645–1733 用历书定气，1734 年起与今法（现代定气）一致。农历月干支按官网「月建」（改历年份依其月建，如「正(子)」→ 子月干支）。
+      </div>
+      </div>
+    </div>
+  </section>
+
   <footer>
     <hr class="divider">
     <p class="src-title">数 据 来 源</p>
     <p class="src">
       ① 主干数据（汉—清）经与中国台湾《重编国语辞典修订本》附录《中国历代年号表》逐条程序化对照核实，该表与方诗铭《中国历史纪年表》口径一致。主干王朝的年号起讫年，根据《现代汉语词典》的《我国历代纪元表》校正，略有去取。<br>
-      ② 改元年月以方《表》为基础，参照历代正史与《资治通鉴》或相关文献对勘得出。
+      ② 改元年月以方《表》为基础，参照历代正史与《资治通鉴》或相关文献对勘得出。<br>
+      ③ 万年历农历日期（1900–2100）据开源项目 solarlunar（MIT License）历表，与通行万年历一致。<br>
+      ④ 万年历按<b>政权分段</b>给出历史朔闰历表（前 140 – 1911）：同时代各政权行用各自历法，故先选政权、再查其年月；分裂时代所列政权各有其历表（如魏/蜀/吳、北魏/東魏/西魏/北齊/北周、遼/金、南明/明鄭）。政权元年正月朔之前的日期按<b>承前历表</b>显示（如清 1645 年正月朔 1-28 之前属甲申年十二月，依明大统历；各朝同理），与官网月历表一致。历表整理自 ytliu0《中國歷代朔閏表》各時代頁（github.com/ytliu0/ChineseCalendar，GPL-3.0），原表据张培瑜、陈美东、薄树人、胡铁珠《中国古代历法》（科学出版社，2008）及李忠林等研究。官网 1582-10-15 前以儒略历记录，本视图同以儒略历显示（1582-10 为改历过渡月）；历表以物理日存储，日干支连续；改历年份的月名依官网原表（如「正(子)」「後九」）。全部历表月格的干支已与物理日换算逐格核对一致，并与官网逐日月历表抽样全年对拍一致。1900 年起用通行历表；无历表政权（十六国、十国、渤海、南诏、西夏、太平天国等）不列入。
     </p>
     <p class="copyright">版 权 声 明</p>
     <p class="copyright-body">
       1. 本工具仅供学习、考据与参考使用；年号、干支、公历年份等历史纪年信息属于客观历史事实，可自由检索与引用。<br>
-      2. 页面设计、程序代码及数据编排受版权保护，版权所有 © 2026 Jingchao Ye，保留一切权利；未经许可不得用于商业发行或转售。<br>
-      3. 数据参照《中国历史纪年表》（方诗铭）及中国台湾《重编国语辞典修订本》附录《中国历代年号表》等公开资料整理，引用请注明出处。<br>
-      4. 界面字体使用开源字体“霞鹜文楷”（LXGW WenKai），依其开源许可使用，特此鸣谢。<br>
-      5. 本工具按"原样"提供，不附带任何明示或默示的保证；用于严谨历史考证时，请以通行史表为准。
+      2. 本工具（程序代码与数据编排）采用 <b>GNU 通用公共许可证第 3 版（GPL-3.0）</b>发布，版权所有 © 2026 Jingchao Ye。你可依该许可自由使用、修改与再分发，但须保留版权与许可声明、标明修改之处，并以同一许可提供相应源码（本工具的源码即所发布的 HTML/JS 文件，许可全文见仓库 <code>LICENSE</code>）。<br>
+      3. 万年历历史朔闰历表与历书节气数据改编自 ytliu0《中國歷代朔閏表》（Copyright © ytliu0，GPL-3.0）；本站派生数据文件 <code>shuorun-historical.js</code>、<code>shuorun-terms.js</code> 亦依 GPL-3.0 提供。<br>
+      4. 年号数据参照《中国历史纪年表》（方诗铭）及中国台湾《重编国语辞典修订本》附录《中国历代年号表》等公开资料整理，引用请注明出处。<br>
+      5. 界面字体使用开源字体“霞鹜文楷”（LXGW WenKai，SIL OFL）；农历历表使用开源项目 solarlunar（MIT License），二者均与本许可相容，特此鸣谢。<br>
+      6. 本工具按"原样"提供，不附带任何明示或默示的保证（包括但不限于适销性与特定用途适用性）；用于严谨历史考证时，请以通行史表为准。
     </p>
   </footer>
 </div>
 
 <script src="data.js"></script>
+<script src="lunar.min.js"></script>
+<script src="shuorun-historical.js"></script>
+<script src="shuorun-terms.js"></script>
 <script>
 (function(){
   "use strict";
@@ -474,7 +616,7 @@
 
   /* ============ 选项卡 ============ */
   var tabs = document.querySelectorAll(".tab");
-  var panels = { p1: document.getElementById("p1"), p2: document.getElementById("p2"), p3: document.getElementById("p3") };
+  var panels = { p1: document.getElementById("p1"), p2: document.getElementById("p2"), p3: document.getElementById("p3"), p4: document.getElementById("p4") };
   function switchTab(id){
     tabs.forEach(function(x){ x.classList.remove("active"); });
     var btn = document.querySelector('.tab[data-panel="' + id + '"]');
@@ -485,6 +627,9 @@
   tabs.forEach(function(t){
     t.addEventListener("click", function(){ switchTab(t.dataset.panel); });
   });
+  // 深链：?tab=p4 直达指定面板（供分享/测试）
+  var tabQ = (location.search || "").match(/[?&]tab=(p[1-4])/);
+  if (tabQ) switchTab(tabQ[1]);
 
   /* ============ 面板一：公历 → 年号 ============ */
   var yearInput = document.getElementById("yearInput");
@@ -555,6 +700,7 @@
   yearInput.addEventListener("keydown", function(ev){ if (ev.key === "Enter") runToEra(); });
   document.querySelectorAll(".chip").forEach(function(c){
     c.addEventListener("click", function(){
+      if (c.dataset.y === undefined) return;   // 其他面板的 chip（如万年历示例）不参与面板一
       yearInput.value = c.dataset.y;
       runToEra();
     });
@@ -1741,6 +1887,631 @@
     if (trig) trig.textContent = show ? "−" : "＋";
   });
 
+  /* ============ 面板四：万年历（每月每日干支） ============ */
+  // —— 日干支：60 甲子连续纪日。锚点：1949-10-01 = 甲子日（JDN 2433191，经 2024-02-10 = 甲辰日校验）。
+  function jdn(y, m, d){
+    var a = Math.floor((14 - m) / 12);
+    var yy = y + 4800 - a;
+    var mm = m + 12 * a - 3;
+    return d + Math.floor((153 * mm + 2) / 5) + 365 * yy + Math.floor(yy / 4) - Math.floor(yy / 100) + Math.floor(yy / 400) - 32045;
+  }
+  function isLeapY(y){ return (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0; }
+  function daysInMonth(y, m){ return [31, isLeapY(y) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][m - 1]; }
+  function dayGZ(y, m, d){
+    var i = ((jdn(y, m, d) + 49) % 60 + 60) % 60;
+    return GAN[i % 10] + ZHI[i % 12];
+  }
+  // —— 儒略历：格里历改革（1582-10-15）之前本视图一律用儒略历显示日期（与官网/通行史表一致）。
+  //    儒略历与格里历只是“标签”不同，同一标签日期的物理日 JDN 相同，故农历层、日干支均不改变。
+  function julianJDN(y, m, d){
+    var a = Math.floor((14 - m) / 12);
+    var yy = y + 4800 - a;
+    var mm = m + 12 * a - 3;
+    return d + Math.floor((153 * mm + 2) / 5) + 365 * yy + Math.floor(yy / 4) - 32083;
+  }
+  function julianLeapY(y){ return (y % 4 === 0); }        // 儒略历闰年（含负年，天文计数）
+  function julianDim(y, m){ return [31, julianLeapY(y) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][m - 1]; }
+  function isJulianDate(y, m, d){ return (y < 1582 || (y === 1582 && (m < 10 || (m === 10 && d <= 4)))); }
+  // 月视图所用历法：1582-10（含）之前按儒略历整月连续显示，1582-11 起按格里历
+  function julianViewMonth(y, m){ return (y < 1582 || (y === 1582 && m <= 10)); }
+  function dateToJDN(y, m, d){ return isJulianDate(y, m, d) ? julianJDN(y, m, d) : jdn(y, m, d); }
+  // 物理日 JDN → 投影格里历日期（仅供内部历算；同一物理日在儒略历下的标签即“原表”日期）
+  function gregOfJDN(J){
+    var a = J + 32044, b = Math.floor((4 * a + 3) / 146097), c = a - Math.floor(146097 * b / 4);
+    var d = Math.floor((4 * c + 3) / 1461), e = c - Math.floor(1461 * d / 4), mm = Math.floor((5 * e + 2) / 153);
+    return { y: 100 * b + d - 4800 + Math.floor(mm / 10), m: mm + 3 - 12 * Math.floor(mm / 10), d: e - Math.floor((153 * mm + 2) / 5) + 1 };
+  }
+  function gzOfJ(J){ var i = ((J + 49) % 60 + 60) % 60; return GAN[i % 10] + ZHI[i % 12]; }
+  function julianDateOfJDN(J){ // 物理日 → 儒略历标签（1582-10-15 前原表所用）
+    var c = J + 32082, d = Math.floor((4 * c + 3) / 1461), e = c - Math.floor(1461 * d / 4), mm = Math.floor((5 * e + 2) / 153);
+    return { y: d - 4800 + Math.floor(mm / 10), m: mm + 3 - 12 * Math.floor(mm / 10), d: e - Math.floor((153 * mm + 2) / 5) + 1 };
+  }
+  // —— 节气：太阳黄经（Meeus 低精度解析式，含 T² 项；公元前 140 – 1949 范围内日级可靠）
+  var TERM_NAMES = ["小寒","大寒","立春","雨水","惊蛰","春分","清明","谷雨","立夏","小满","芒种","夏至","小暑","大暑","立秋","处暑","白露","秋分","寒露","霜降","立冬","小雪","大雪","冬至"];
+  var TERM_MONTH = [1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12];
+  var TERM_LONG  = [285,300,315,330,345,0,15,30,45,60,75,90,105,120,135,150,165,180,195,210,225,240,255,270];
+  function sunLongAt(y, m, d, hourUTC){
+    var n = jdn(y, m, d) - 2451545.0 + (hourUTC - 12) / 24;
+    var T = n / 36525;
+    var L0 = 280.46646 + 36000.76983 * T + 0.0003032 * T * T;
+    var M = (357.52911 + 35999.05029 * T - 0.0001537 * T * T) * Math.PI / 180;
+    var C = (1.914602 - 0.004817 * T - 0.000014 * T * T) * Math.sin(M)
+          + (0.019993 - 0.000101 * T) * Math.sin(2 * M)
+          + 0.000289 * Math.sin(3 * M);
+    var lam = L0 + C;
+    return ((lam % 360) + 360) % 360;
+  }
+  function termDay(y, k){
+    // 以北京时（UTC+8）自然日定节气日：黄经在当日 0 时与次日 0 时之间跨过目标值
+    var mm = TERM_MONTH[k], dim = daysInMonth(y, mm);
+    var target = TERM_LONG[k];
+    var wrap = (target === 0);          // 春分黄经 0° → 按 360° 连续处理
+    var T = wrap ? 360 : target;
+    for (var d = 1; d <= dim; d++){
+      var s = sunLongAt(y, mm, d, -8);  // 北京 d 日 0 时 = UTC (d-1) 日 16 时
+      var e = sunLongAt(y, mm, d, 16);  // 北京 (d+1) 日 0 时 = UTC d 日 16 时
+      if (wrap){ if (s < 180) s += 360; if (e < 180) e += 360; }
+      if (s < T && T <= e) return d;
+    }
+    var best = 1, bd = 1e9;             // 兜底：取黄经最接近目标的一天
+    for (var dd = 1; dd <= dim; dd++){
+      var v = sunLongAt(y, mm, dd, 8);
+      if (wrap && v < 180) v += 360;
+      var dl = Math.abs(v - T);
+      if (dl < bd){ bd = dl; best = dd; }
+    }
+    return best;
+  }
+  // —— 干支月：以“节”为界（立春→寅月 … 大雪→子月、小寒→丑月），五虎遁年上起月
+  var JIEQI_CACHE = {};
+  function jieqiBoundaries(Y){
+    if (JIEQI_CACHE[Y]) return JIEQI_CACHE[Y];
+    var ks = [2,4,6,8,10,12,14,16,18,20,22,0];   // 立春…大雪、次年小寒
+    var ms = [2,3,4,5,6,7,8,9,10,11,12,1];
+    var bs = [];
+    for (var i = 0; i < 12; i++){
+      var yy = (i === 11 ? Y + 1 : Y);
+      bs.push({ jd: jdn(yy, ms[i], termDay(yy, ks[i])), k: i + 1, name: TERM_NAMES[ks[i]] });
+    }
+    JIEQI_CACHE[Y] = bs;
+    return bs;
+  }
+  function jieqiMonthOfD(D){
+    var g = gregOfJDN(D), y = g.y;
+    if (D >= jieqiBoundaries(y)[0].jd){
+      var bs = jieqiBoundaries(y), cur = bs[0];
+      for (var i = 0; i < bs.length; i++){ if (bs[i].jd <= D) cur = bs[i]; }
+      return { k: cur.k, Y: y };
+    }
+    var prev = jieqiBoundaries(y - 1);
+    var cur = (jdn(y, 1, termDay(y, 0)) <= D) ? prev[11] : prev[10];
+    return { k: cur.k, Y: y - 1 };
+  }
+  function yearGZIndex(Y){
+    var A = Y >= 1 ? Y : Y + 1;
+    return ((A - 4) % 60 + 60) % 60;
+  }
+  function monthGZ(Y, k){
+    var ys = yearGZIndex(Y);
+    return GAN[(2 * ys + 1 + k) % 10] + ZHI[(k + 1) % 12];
+  }
+  // 官网表头给的是「月建」（如 正(子)）：此时月干支须按该月建推出，而非按月序
+  var ZHI_MONTH = { 寅: 1, 卯: 2, 辰: 3, 巳: 4, 午: 5, 未: 6, 申: 7, 酉: 8, 戌: 9, 亥: 10, 子: 11, 丑: 12 };
+  function monthGZOf(lYear, lMonth, lab){
+    var m = String(lab || "").match(/[（(]([子丑寅卯辰巳午未申酉戌亥])[)）]/);
+    if (m && ZHI_MONTH[m[1]]) return monthGZ(lYear, ZHI_MONTH[m[1]]);
+    return monthGZ(lYear, lMonth);
+  }
+  var CAL_MONTH_CN = ["", "正月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"];
+  var ANIMALS = ["鼠","牛","虎","兔","龙","蛇","马","羊","猴","鸡","狗","猪"];
+
+  // ===== 农历层：1900–2100 用历表（lunar.min.js，与老黄历逐日一致）；此前用天文推算（参考） =====
+  var LUNAR_DAY_CN = ["", "初一","初二","初三","初四","初五","初六","初七","初八","初九","初十","十一","十二","十三","十四","十五","十六","十七","十八","十九","二十","廿一","廿二","廿三","廿四","廿五","廿六","廿七","廿八","廿九","三十"];
+  function newMoonJDE(k){
+    var T = k / 1236.85;
+    var jd = 2451550.09766 + 29.530588861 * k + 0.00015437 * T * T - 0.000000150 * T * T * T + 0.00000000073 * T * T * T * T;
+    var E = 1 - 0.002516 * T - 0.0000074 * T * T;
+    var M  = (2.5534 + 29.10535670 * k - 0.0000014 * T * T) * Math.PI / 180;
+    var Mp = (201.5643 + 385.81693528 * k + 0.0107582 * T * T + 0.00001238 * T * T * T - 0.000000058 * T * T * T * T) * Math.PI / 180;
+    var F  = (160.7108 + 390.67050284 * k - 0.0016118 * T * T - 0.00000227 * T * T * T + 0.000000011 * T * T * T * T) * Math.PI / 180;
+    var Om = (124.7746 - 1.56375588 * k + 0.0020672 * T * T + 0.00000215 * T * T * T) * Math.PI / 180;
+    jd += -0.40720 * Math.sin(Mp) + 0.17241 * E * Math.sin(M) + 0.01608 * Math.sin(2 * Mp) + 0.01039 * Math.sin(2 * F)
+        + 0.00739 * E * Math.sin(Mp - M) - 0.00514 * E * Math.sin(Mp + M) + 0.00208 * E * E * Math.sin(2 * M)
+        - 0.00111 * Math.sin(Mp - 2 * F) - 0.00057 * Math.sin(Mp + 2 * F) + 0.00056 * E * Math.sin(2 * Mp + M)
+        - 0.00042 * Math.sin(3 * Mp) + 0.00042 * E * Math.sin(M + 2 * F) + 0.00038 * E * Math.sin(M - 2 * F)
+        - 0.00024 * E * Math.sin(2 * M - Mp) - 0.00017 * Math.sin(Om) - 0.00007 * Math.sin(Mp + 2 * M)
+        + 0.00004 * Math.sin(2 * M - 2 * F) + 0.00004 * Math.sin(3 * M) + 0.00003 * Math.sin(Mp + M - 2 * F)
+        + 0.00003 * Math.sin(2 * Mp + 2 * F) - 0.00003 * Math.sin(Mp + M + 2 * F) + 0.00003 * Math.sin(Mp - M + 2 * F)
+        - 0.00002 * Math.sin(Mp - M - 2 * F) - 0.00002 * Math.sin(3 * Mp + M) + 0.00002 * Math.sin(4 * Mp);
+    return jd;
+  }
+  function newMoonDayIdx(k){ return Math.floor(newMoonJDE(k) - 1 / 6); }
+  function zhongqiDayIdx(Y, n){
+    var kk = (n === 11 ? 23 : (n === 12 ? 1 : 2 * n + 1));
+    var gy = (n === 11 ? Y : Y + 1);
+    return jdn(gy, TERM_MONTH[kk], termDay(gy, kk)) - 1;
+  }
+  var CHAIN_CACHE = {};
+  function winterChain(Y){
+    if (CHAIN_CACHE[Y]) return CHAIN_CACHE[Y];
+    var dz1 = jdn(Y, 12, termDay(Y, 23)) - 1;
+    var dz2 = jdn(Y + 1, 12, termDay(Y + 1, 23)) - 1;
+    var kk  = Math.round((dz1 - 2451549.6) / 29.530588861);
+    while (newMoonDayIdx(kk) > dz1) kk--;
+    while (newMoonDayIdx(kk + 1) <= dz1) kk++;
+    var kk2 = Math.round((dz2 - 2451549.6) / 29.530588861);
+    while (newMoonDayIdx(kk2) > dz2) kk2--;
+    while (newMoonDayIdx(kk2 + 1) <= dz2) kk2++;
+    var months = [], i;
+    for (i = kk; i < kk2; i++) months.push({ start: newMoonDayIdx(i), num: 0, leap: false });
+    var num = 11;
+    for (i = 0; i < months.length; i++){
+      var zq = zhongqiDayIdx(Y, num);
+      var next = (i + 1 < months.length ? months[i + 1].start : Infinity);
+      if (zq >= months[i].start && zq < next){
+        months[i].num = num;
+        num = (num === 12 ? 1 : num + 1);
+      } else {
+        months[i].leap = true;
+        months[i].num = num - 1;   // 闰X月：X = 前一个常规月
+      }
+    }
+    CHAIN_CACHE[Y] = { Y: Y, months: months };
+    return CHAIN_CACHE[Y];
+  }
+  function lunarAstro(y, m, d){
+    var D = jdn(y, m, d) - 1;
+    var ch = winterChain(y);
+    if (D < ch.months[0].start) ch = winterChain(y - 1);
+    var ms = ch.months, i;
+    for (i = 0; i < ms.length; i++){
+      var end = (i + 1 < ms.length ? ms[i + 1].start : Infinity);
+      if (D >= ms[i].start && D < end){
+        return { lYear: (ms[i].num >= 11 ? ch.Y : ch.Y + 1), lMonth: ms[i].num, lDay: D - ms[i].start + 1, isLeap: ms[i].leap };
+      }
+    }
+    return null;
+  }
+  function lunarAstroD(D){
+    var g = gregOfJDN(D);
+    return lunarAstro(g.y, g.m, g.d);
+  }
+  // 统一入口（按物理日）：优先当前政权的历史朔闰历表；1900–2100 通行历表；其余天文推算（参考）
+  function lunarOfD(D){
+    var g = gregOfJDN(D);
+    if (CUR_SEC){
+      var h0 = histLunarOfD(D);
+      if (h0){ h0.exact = false; h0.src = "hist"; return h0; }
+    }
+    if (g.y >= 1900 && g.y <= 2100 && typeof solarLunar !== "undefined"){
+      var r = solarLunar.default.solar2lunar(g.y, g.m, g.d);
+      if (r && r.lYear) return { lYear: r.lYear, lMonth: r.lMonth, lDay: r.lDay, isLeap: !!r.isLeap, exact: true, src: "sol" };
+    }
+    var a = lunarAstroD(D);
+    if (a){ a.exact = false; a.src = "astro"; }
+    return a;
+  }
+  function solarTermName(y, m, d){
+    if (y >= 1900 && y <= 2100 && typeof solarLunar !== "undefined"){
+      var r = solarLunar.default.solar2lunar(y, m, d);
+      return (r && r.isTerm && r.term) ? r.term : "";
+    }
+    return "";
+  }
+  function lunarDayCN(n){ return LUNAR_DAY_CN[n] || (n + "日"); }
+  function lunarMonthCN(n, leap){ return (leap ? "闰" : "") + CAL_MONTH_CN[n]; }
+
+  // ===== 历史朔闰历表（按政权分段）：数据见 shuorun-historical.js =====
+  // sections[sec] = {from,to,rows:[[公曆年, 正月朔物理JDN, 月名索引(base36串), 各月偏移(base36,逗號分隔)]]}
+  var HIST = null;
+  var CUR_DYN = null;      // 当前政权条目 {n, sec, from, to, cal, prev?}
+  var CUR_SEC = null;      // 当前政权主历表 {key, map, from, to}
+  var CUR_PREV = null;     // 承前历表（政权元年年初若干日仍属前朝历法）
+  var SEC_CACHE = {};
+  function histInit(){
+    if (!HIST && typeof SHUORUN_HIST !== "undefined"){
+      HIST = SHUORUN_HIST;
+      // 兼容：若数据文件里的历法名带「朝代·」前缀，去掉以免显示成「清·清·時憲曆」
+      for (var i = 0; i < HIST.dynasties.length; i++){
+        var d = HIST.dynasties[i], pre = d.n + '·';
+        if (d.cal && d.cal.indexOf(pre) === 0) d.cal = d.cal.slice(pre.length);
+      }
+    }
+    return HIST;
+  }
+  function histDynList(){ var H = histInit(); return H ? H.dynasties : []; }
+  function histSecRaw(secKey){
+    var H = histInit(); if (!H || !secKey) return null;
+    if (SEC_CACHE[secKey]) return SEC_CACHE[secKey];
+    var s = H.sections[secKey]; if (!s) return null;
+    var map = {};
+    for (var i = 0; i < s.rows.length; i++){
+      var r = s.rows[i], labs = r[2], offs = r[3].split(','), ms = [];
+      for (var k = 0; k < offs.length; k++) ms.push([ r[1] + parseInt(offs[k], 36), parseInt(labs.substr(k * 2, 2), 36) ]);
+      map[r[0]] = ms;
+    }
+    SEC_CACHE[secKey] = { key: secKey, map: map, from: s.from, to: s.to };
+    return SEC_CACHE[secKey];
+  }
+  function histSec(secKey){ var s = histSecRaw(secKey); CUR_SEC = s; return s; }
+  var LAB_NUM = { "正": 1, "一": 1, "二": 2, "三": 3, "四": 4, "五": 5, "六": 6, "七": 7, "八": 8, "九": 9, "十": 10, "十一": 11, "十二": 12 };
+  var CN_NUM = ["", "一", "二", "三", "四", "五", "六", "七", "八", "九", "十", "十一", "十二"];
+  function labOrd(lab){
+    var s = String(lab || "").replace(/[（(].*$/, "").replace(/^閏/, "").replace(/^后九|^後九/, "九");
+    return LAB_NUM[s] || 0;
+  }
+  function labLeap(lab){ return /^閏|^后九|^後九/.test(String(lab || "")); }
+  // 月名显示：改历年的特殊月名（如「正(子)」「後九」）按官网原样，其余用通行简体名
+  function labMonthCN(lab, n, leap){
+    var std = (leap ? "閏" : "") + (n === 1 ? "正" : CN_NUM[n]);
+    if (lab && lab !== std) return lab;
+    return (leap ? "闰" : "") + CAL_MONTH_CN[n];
+  }
+  function histLookupIn(sec, D){
+    if (!sec) return null;
+    var g = gregOfJDN(D), map = sec.map;
+    for (var dy = -1; dy <= 1; dy++){
+      var ay = g.y + dy, ms = map[ay];
+      if (!ms || !ms.length) continue;
+      var nxt = map[ay + 1];
+      var end = nxt ? nxt[0][0] : ms[ms.length - 1][0] + 40;
+      if (D < ms[0][0] || D >= end) continue;
+      for (var i = 0; i < ms.length; i++){
+        var nx = (i + 1 < ms.length ? ms[i + 1][0] : end);
+        if (D >= ms[i][0] && D < nx){
+          var lab = HIST.labels[ms[i][1]] || "";
+          return { lYear: ay, lMonth: labOrd(lab), lDay: D - ms[i][0] + 1, isLeap: labLeap(lab), lab: lab };
+        }
+      }
+    }
+    return null;
+  }
+  function histCovered(sec, D){ return !!histLookupIn(sec, D); }
+  // 主历表优先；政权元年年初属于前朝历法者，用承前历表（与官网月历表一致）
+  function histLunarOfD(D){
+    var r = histLookupIn(CUR_SEC, D);
+    if (r) return r;
+    if (CUR_PREV) return histLookupIn(CUR_PREV, D);
+    return null;
+  }
+  // 农历层标注：本政权历表 / 通行历表（无标注）/ 天文推算
+  function lunSrcNote(src){
+    if (src === "hist") return '<span class="tui">历表</span>';
+    if (src === "astro") return '<span class="tui">推算</span>';
+    return "";
+  }
+
+  // ===== 历书节气（平气／定气）：-105–1733，见 shuorun-terms.js =====
+  var TERMS = null, TERMS_CACHE = {};
+  function histTermsInit(){ if (!TERMS && typeof SHUORUN_TERMS !== "undefined") TERMS = SHUORUN_TERMS; return TERMS; }
+  // 返回该年 24 气的物理日 JDN（小寒…冬至）；无历书数据返回 null
+  function histTermsOf(y){
+    var T = histTermsInit(); if (!T || y < T.from || y > T.to) return null;
+    if (TERMS_CACHE[y]) return TERMS_CACHE[y];
+    var s = T.rows[y - T.from], base = dateToJDN(y - 1, 12, 31), out = [];
+    for (var k = 0; k < 24; k++) out.push(base + (parseInt(s.substr(k * 2, 2), 36) - 40));
+    TERMS_CACHE[y] = out;
+    return out;
+  }
+  function termEraName(y){
+    if (y > 1733) return "今法（定气）";
+    if (y >= 1645) return "历书（定气）";
+    if (y >= -104) return "历书（平气）";
+    return "今法（定气）";
+  }
+
+  var calYearInput = document.getElementById("calYear");
+  var calMonthSel = document.getElementById("calMonth");
+  var calNote = document.getElementById("calNote");
+  var calHead = document.getElementById("calHead");
+  var calGrid = document.getElementById("calGrid");
+  var calState = { y: 2026, m: 1 };
+
+  /* ===== 政权列表 / 年份索引 / 视图切换 ===== */
+  var calDynView = document.getElementById("calDynView");
+  var calCalView = document.getElementById("calCalView");
+  var calDynListEl = document.getElementById("calDynList");
+  var calDynTitle = document.getElementById("calDynTitle");
+  var calYearQ = document.getElementById("calYearQ");
+  var calYearQResult = document.getElementById("calYearQResult");
+  function yLab(y){ return (y < 0 ? "前" + (-y) : "" + y); }
+  function dynByName(n){
+    var l = histDynList();
+    for (var i = 0; i < l.length; i++) if (l[i].n === n) return l[i];
+    return null;
+  }
+  function dynInEraDB(n){
+    for (var i = 0; i < ERAS.length; i++) if (ERAS[i].dynasty === n) return true;
+    return false;
+  }
+  function renderDynList(){
+    var list = histDynList(), html = "", shown = 0;
+    for (var i = 0; i < list.length; i++){
+      var d = list[i];
+      if (!dynInEraDB(d.n)) continue;                 // 年号库中无此政权则不显示
+      shown++;
+      html += '<div class="item link-item dyn-chip dyn-card" data-dyn="' + esc(d.n) + '" title="进入 ' + esc(d.n) + ' 历法查询">'
+        + '<div class="era">' + esc(d.n) + '</div>'
+        + '<div class="meta"><div class="dyn">' + esc(d.cal) + '</div><div class="emp">历史朔闰历表</div></div>'
+        + '<div class="yr">' + yLab(d.from) + ' – ' + yLab(d.to) + '</div>'
+        + '</div>';
+    }
+    if (!shown) html = '<span style="color:var(--ink-soft);">未能载入历表数据（shuorun-historical.js）</span>';
+    calDynListEl.innerHTML = html;
+    calDynListEl.querySelectorAll(".dyn-chip").forEach(function(b){
+      b.addEventListener("click", function(){ openDyn(b.dataset.dyn); });
+    });
+  }
+  function renderYearIndex(year){
+    var list = histDynList(), html = "", n = 0;
+    for (var i = 0; i < list.length; i++){
+      var d = list[i];
+      if (!dynInEraDB(d.n)) continue;
+      if (year < d.from || year > d.to) continue;
+      n++;
+      html += '<div class="item link-item dyn-chip dyn-card" data-dyn="' + esc(d.n) + '">'
+        + '<div class="era">' + esc(d.n) + '</div>'
+        + '<div class="meta"><div class="dyn">' + esc(d.cal) + '</div></div>'
+        + '<div class="yr">' + yLab(d.from) + ' – ' + yLab(d.to) + '</div>'
+        + '</div>';
+    }
+    calYearQResult.innerHTML = '<div class="hint" style="margin-top:6px;">' + fmtY(year) + '：'
+      + (n ? '该年并行 ' + n + ' 种历法，请选择政权进入查询' : '官網朔閏表無此年之政權历表' + (year >= 1900 ? '（1900 年以後可依通行历表）' : '')) + '</div>'
+      + (html ? '<div class="dyn-grid">' + html + '</div>' : '');
+    calYearQResult.querySelectorAll(".dyn-chip").forEach(function(b){
+      b.addEventListener("click", function(){ openDyn(b.dataset.dyn, year); });
+    });
+  }
+  function calShowList(){
+    CUR_DYN = null; CUR_SEC = null; CUR_PREV = null;
+    calDynView.style.display = "";
+    calCalView.style.display = "none";
+    renderDynList();
+    if (calYearQResult) calYearQResult.innerHTML = "";
+  }
+  function calShowCal(){
+    calDynView.style.display = "none";
+    calCalView.style.display = "";
+  }
+  function openDyn(n, year, mon){
+    var d = dynByName(n);
+    if (!d){ calShowList(); return; }
+    CUR_DYN = d;
+    histSec(d.sec);
+    CUR_PREV = d.prev ? histSecRaw(d.prev) : null;
+    calDynTitle.textContent = d.n + '（' + yLab(d.from) + '–' + yLab(d.to) + '）· ' + d.cal;
+    calShowCal();
+    var ty = (year == null || isNaN(year)) ? (calState.y >= d.from && calState.y <= d.to ? calState.y : d.to) : year;
+    if (ty < d.from) ty = d.from;
+    if (ty > d.to) ty = d.to;
+    gotoCal(ty, mon || calState.m);
+  }
+
+  // 月视图历法基准与格点：1582-09 及以前按儒略历整月；1582-10 为改历过渡月
+  // （10-01～10-04 儒略历 → 格里历 10-05～14 不存在 → 10-15 起格里历，与官网/史表一致）；
+  // 1582-11 起按格里历。
+  function isReformMonth(y, m){ return (y === 1582 && m === 10); }
+  function monthCells(y, m){
+    var cells = [], d;
+    if (isReformMonth(y, m)){
+      for (d = 1; d <= 4; d++) cells.push({ label: d, D: julianJDN(1582, 10, d), b: 0 });   // 儒略历段
+      for (d = 15; d <= 31; d++) cells.push({ label: d, D: jdn(1582, 10, d), b: 1 });       // 格里历段
+    } else if (julianViewMonth(y, m)){
+      for (d = 1; d <= julianDim(y, m); d++) cells.push({ label: d, D: julianJDN(y, m, d), b: 0 });
+    } else {
+      for (d = 1; d <= daysInMonth(y, m); d++) cells.push({ label: d, D: jdn(y, m, d), b: 1 });
+    }
+    return cells;
+  }
+  function viewDim(y, m){ return monthCells(y, m).length; }
+  function viewJDN(y, m, d){ return julianViewMonth(y, m) ? julianJDN(y, m, d) : jdn(y, m, d); }
+  // 分段范围标注：整月为一段 → 空；跨历段（如改历月）逐段列出，如（1–4、15–25 日）
+  function cellRangeTxt(labels, monthLabels){
+    if (labels.length === monthLabels.length){
+      var full = true;
+      for (var i = 0; i < labels.length; i++) if (labels[i] !== monthLabels[i]){ full = false; break; }
+      if (full) return "";
+    }
+    var runs = [], a = labels[0], prev = labels[0];
+    for (var i = 1; i <= labels.length; i++){
+      var v = (i < labels.length ? labels[i] : null);
+      if (v !== null && v === prev + 1){ prev = v; continue; }
+      runs.push((a === prev) ? (a + '日') : (a + '–' + prev + '日'));
+      if (v !== null){ a = v; prev = v; }
+    }
+    return '（' + runs.join('、') + '）';
+  }
+  function lunarSegments(y, m){
+    var cells = monthCells(y, m), ml = cells.map(function(c){ return c.label; });
+    var segs = [], cur = null;
+    for (var i = 0; i < cells.length; i++){
+      var l = lunarOfD(cells[i].D);
+      if (!l) continue;
+      var key = l.lYear + '|' + l.lMonth + '|' + (l.isLeap ? 1 : 0);
+      if (!cur || cur.key !== key){
+        cur = { key: key, lYear: l.lYear, lMonth: l.lMonth, isLeap: l.isLeap, lab: l.lab, labels: [] };
+        segs.push(cur);
+      }
+      cur.labels.push(cells[i].label);
+    }
+    segs.forEach(function(s){ s.range = cellRangeTxt(s.labels, ml); });
+    return segs;
+  }
+  function renderCal(){
+    var y = calState.y, m = calState.m;
+    if (!(y >= -140 && y <= 1949)){
+      calNote.className = "result-empty";
+      calNote.innerHTML = "本万年历仅覆盖<b>公元前 140 年（建元元年）至 1949 年（民国 38 年）</b>：公元前 140 年以前历法差异过大，1949 年以后年号制度已终结、通行公历。";
+      calNote.style.display = "";
+      calHead.innerHTML = "";
+      calGrid.innerHTML = "";
+      return;
+    }
+    var cells = monthCells(y, m);
+    var reform = isReformMonth(y, m);
+    var jul = julianViewMonth(y, m) && !reform;   // 纯儒略历月
+    // 该月农历数据的实际来源：hist=本政权历表 / sol=通行历表 / astro=天文推算
+    var srcRef = null;
+    var midLun = lunarOfD(cells[Math.floor(cells.length / 2)].D);
+    if (midLun) srcRef = midLun.src;
+    var noteHtml = "";
+    if (srcRef === "hist" && CUR_DYN){
+      noteHtml += '<div>✓ ' + fmtY(y) + ' 的农历日期按<b>历史朔闰历表</b>（' + esc(CUR_DYN.n) + '·' + esc(CUR_DYN.cal) + '）给出，朔日与闰月依当时官方颁行历法。' + (CUR_DYN.to <= 1644 ? '各朝历法不同，个别朔日与后世推算可差 1 日；改历年份的月名按官网原表（如「正(子)」）。' : '') + '</div>';
+      if (CUR_PREV && cells.length && !histCovered(CUR_SEC, cells[0].D)){
+        noteHtml += '<div>ℹ 本月前段日期早于「' + esc(CUR_DYN.n) + '」历表起点（该政权元年正月朔之前仍属前朝），按<b>承前历表</b>（' + esc(CUR_PREV.key.replace('/', ' · ')) + '）显示，与官网月历表一致。</div>';
+      }
+    } else if (srcRef === "sol"){
+      noteHtml += '<div>✓ ' + fmtY(y) + ' 的农历日期按<b>通行历表</b>给出，与老黄历逐日一致。</div>';
+    } else {
+      noteHtml += '<div>ℹ 该月无历史历表覆盖，农历按<b>定朔定气</b>天文推算（参考值）。</div>';
+    }
+    if (reform){
+      noteHtml += '<div>✓ 本视图为<b>改历过渡月</b>：10-01～10-04 按儒略历、10-15 起按格里历显示（格里历的 10-05～10-14 不存在；儒略 10-04 之次日即格里 10-15），与官网原表及通行史表一致。</div>';
+    } else if (jul){
+      noteHtml += '<div>✓ 本视图日期按<b>儒略历</b>显示（格里历改革 1582-10-15 前史表通行，与官网原表、陈垣《二十史朔闰表》等一致）。</div>';
+    } else if (y === 1582){
+      noteHtml += '<div>✓ 1582 年 10 月改历后，本视图按<b>格里历</b>显示。</div>';
+    }
+    if (y >= -140 && y <= -104) noteHtml += '<div>⚠ 太初元年（前 104 年）改历前行用颛顼历、以十月为岁首；官网自太初元年起标注月干支，此前按同法补注（仅供参考）。</div>';
+    if (noteHtml){ calNote.className = "cal-note"; calNote.innerHTML = noteHtml; calNote.style.display = ""; }
+    else { calNote.style.display = "none"; calNote.innerHTML = ""; }
+
+    var dow0 = (cells[0].D + 1) % 7;
+    var lSegs = lunarSegments(y, m);
+    var eras = yearToEras(y);
+    var today = new Date();
+    var exact = (srcRef === "sol");   // 通行历表年代：节气名用通行历表给出
+
+    var head = '<div class="cal-title">' + fmtY(y) + ' · ' + m + ' 月'
+      + (jul ? ' <span class="tui">儒略历</span>' : (reform ? ' <span class="tui">改历过渡月</span>' : '')) + '</div>';
+    head += '<div class="cal-line">农历：' + lSegs.map(function(s){
+      var gi = yearGZIndex(s.lYear);
+      var gz = monthGZOf(s.lYear, s.lMonth, s.lab);
+      return '<b>' + GAN[gi % 10] + ZHI[gi % 12] + '年</b>·' + labMonthCN(s.lab, s.lMonth, s.isLeap)
+        + '（<b>' + gz + '月</b>）' + s.range
+        + lunSrcNote(srcRef);
+    }).join('　') + '</div>';
+    head += '<div class="cal-line">本年行用：' + (eras.length
+      ? eras.map(function(mt){ return '<b>' + esc(mt.e.name) + '</b>' + mt.n + eraYearTerm(mt.e, mt.n) + '（' + esc(mt.e.dynasty) + '）'; }).join('、')
+      : '无对应年号记录') + '</div>';
+    calHead.innerHTML = head;
+
+    var html = ["日","一","二","三","四","五","六"].map(function(w, i){
+      return '<div class="cal-dow' + (i === 0 ? ' sun' : '') + '">' + w + '</div>';
+    }).join("");
+    // 节气（exact=通行历表年代除外）：优先用官网「历书节气」（-105–1733：1645 前平气、其后定气），
+    // 无历书数据时用现代天文（定气）计算
+    var termMark = null, termYears = [];
+    if (!exact){
+      var Dv0 = cells[0].D, Dv1 = cells[cells.length - 1].D;
+      var gA = gregOfJDN(Dv0), gB = gregOfJDN(Dv1);
+      termMark = {};
+      for (var gy2 = gA.y - 1; gy2 <= gB.y + 1; gy2++){
+        var histT = histTermsOf(gy2), hit = false;
+        if (histT){
+          for (var kk2 = 0; kk2 < 24; kk2++){
+            var Jv = histT[kk2];
+            if (Jv >= Dv0 && Jv <= Dv1){ termMark[Jv] = kk2; hit = true; }
+          }
+        } else {
+          for (var kk3 = 0; kk3 < 24; kk3++){
+            var Jv3 = jdn(gy2, TERM_MONTH[kk3], termDay(gy2, kk3));
+            if (Jv3 >= Dv0 && Jv3 <= Dv1) termMark[Jv3] = kk3;
+          }
+        }
+        if (hit) termYears.push(gy2);
+      }
+    }
+    if (!exact && termYears.length) calNote.innerHTML += '<div>ℹ 二十四节气按<b>' + termEraName(termYears[0]) + '</b>给出（官网「曆書節氣」口径，' + termYears[0] + ' 年）。</div>';
+    for (var i = 0; i < dow0; i++) html += '<div class="cal-cell empty"></div>';
+    for (var i = 0; i < cells.length; i++){
+      var cell = cells[i], label = cell.label, Dv = cell.D;
+      var cls = (!jul && today.getFullYear() === y && today.getMonth() + 1 === m && today.getDate() === label) ? ' today' : '';
+      var lun = lunarOfD(Dv);
+      var lday = lun ? '<div class="ld' + (lun.lDay === 1 ? ' shuo' : '') + '">' + lunarDayCN(lun.lDay) + '</div>' : '';
+      var jq = "";
+      if (exact){
+        var tn = solarTermName(y, m, label);
+        if (tn){
+          var ti = TERM_NAMES.indexOf(tn);
+          jq = '<div class="jq' + (ti % 2 === 0 ? ' jie' : '') + '">' + tn + '</div>';
+        }
+      } else if (termMark && termMark[Dv] !== undefined){
+        var kk2 = termMark[Dv];
+        jq = '<div class="jq' + (kk2 % 2 === 0 ? ' jie' : '') + '">' + TERM_NAMES[kk2] + '</div>';
+      }
+      html += '<div class="cal-cell' + cls + '"' + (cell.b === 0 ? ' title="儒略历"' : '') + '><div class="d">' + label + '</div>' + lday + '<div class="gz">' + gzOfJ(Dv) + '</div>' + jq + '</div>';
+    }
+    calGrid.innerHTML = html;
+  }
+  function syncCalInputs(){
+    calYearInput.value = calState.y;
+    calMonthSel.value = calState.m;
+  }
+  function gotoCal(y, m){
+    if (CUR_DYN){
+      if (y < CUR_DYN.from) y = CUR_DYN.from;
+      if (y > CUR_DYN.to) y = CUR_DYN.to;
+    }
+    calState.y = y; calState.m = m;
+    syncCalInputs();
+    renderCal();
+  }
+  (function initCal(){
+    var now = new Date();
+    for (var i = 1; i <= 12; i++){
+      var o = document.createElement("option");
+      o.value = i; o.textContent = i + " 月";
+      calMonthSel.appendChild(o);
+    }
+    document.getElementById("calPrevM").addEventListener("click", function(){
+      gotoCal(calState.y, calState.m === 1 ? 12 : calState.m - 1);
+    });
+    document.getElementById("calNextM").addEventListener("click", function(){
+      gotoCal(calState.y, calState.m === 12 ? 1 : calState.m + 1);
+    });
+    document.getElementById("calPrevY").addEventListener("click", function(){ gotoCal(calState.y - 1, calState.m); });
+    document.getElementById("calNextY").addEventListener("click", function(){ gotoCal(calState.y + 1, calState.m); });
+    calYearInput.addEventListener("keydown", function(ev){
+      if (ev.key !== "Enter") return;
+      var yr = parseYear(calYearInput.value);
+      if (yr !== null && !isNaN(yr)) gotoCal(yr, calState.m);
+      else { calNote.className = "result-empty"; calNote.innerHTML = "请输入有效年份（公元前140–1949，如：1644、公元前140）。"; calNote.style.display = ""; }
+    });
+    calMonthSel.addEventListener("change", function(){ gotoCal(calState.y, parseInt(calMonthSel.value, 10)); });
+    document.querySelectorAll(".cal-chip").forEach(function(c){
+      c.addEventListener("click", function(){ gotoCal(parseInt(c.dataset.cy, 10), calState.m); });
+    });
+    document.getElementById("calBackBtn").addEventListener("click", function(){ calShowList(); });
+    document.getElementById("calYearQBtn").addEventListener("click", function(){ doYearQuery(); });
+    calYearQ.addEventListener("keydown", function(ev){ if (ev.key === "Enter") doYearQuery(); });
+    function doYearQuery(){
+      var yr = parseYear(calYearQ.value);
+      if (yr === null || isNaN(yr)){ calYearQResult.innerHTML = '<div class="result-empty">请输入有效年份（如：1120、公元前 100）。</div>'; return; }
+      renderYearIndex(yr);
+    }
+    var calQ = (location.search || "").match(/[?&]cal=(-?\d{1,6})-(\d{1,2})/);
+    var dynQ = (location.search || "").match(/[?&]dyn=([^&#]+)/);
+    var yearQ = (location.search || "").match(/[?&]year=(-?\d{1,6})/);
+    var ty0 = now.getFullYear(), tm0 = now.getMonth() + 1;
+    if (calQ){
+      var qy = parseInt(calQ[1], 10), qm = parseInt(calQ[2], 10);
+      if (!isNaN(qy)){ ty0 = qy; if (!isNaN(qm) && qm >= 1 && qm <= 12) tm0 = qm; }
+    }
+    if (ty0 > 1949) ty0 = 1949;
+    if (ty0 < -140) ty0 = -140;
+    calState.y = ty0; calState.m = tm0;
+    if (dynQ){
+      openDyn(decodeURIComponent(dynQ[1]), calQ ? ty0 : null, calQ ? tm0 : null);
+    } else if (yearQ){
+      calShowList();
+      calYearQ.value = yearQ[1];
+      renderYearIndex(parseInt(yearQ[1], 10));
+    } else {
+      calShowList();
+    }
+  })();
+
   /* ============ 初始化 ============ */
   document.getElementById("statEras").textContent = ERAS.length;
   document.getElementById("statDyn").textContent = DYN_COUNT;
@@ -1752,3 +2523,4 @@
 </script>
 </body>
 </html>
+

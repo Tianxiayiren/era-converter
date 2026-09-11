@@ -1,6 +1,6 @@
 # 公历·年号转换器 (Era Converter)
 
-**Chinese Imperial Era ↔ Gregorian Calendar Converter** — **v1.2.0**
+**Chinese Imperial Era ↔ Gregorian Calendar Converter** — **v1.5.0**
 
 A lightweight static web application for converting between Chinese imperial era names (年号) and Gregorian calendar years. It covers historical nianhaos from **140 BCE (建元) to 1949 CE (民国 38 年)**, including concurrent dynasties, interrupted-then-resumed eras (纪年续接), private in-territory eras, and modern special regimes (太平天国, 伪满洲国, 民国, 洪宪). Currently contains **755 era records across 72 dynasties / regimes**.
 
@@ -9,6 +9,7 @@ A lightweight static web application for converting between Chinese imperial era
 - 🔄 **Bidirectional Conversion** – Gregorian ↔ Imperial Era, both directions
 - 📚 **Comprehensive Database** – 755 era records across 72 dynasties / regimes
 - 🎯 **Ganzhi Support** – Chinese sexagenary cycle (干支) display for every year
+- 🗓️ **万年历＝按政权分段的历法查询** – 历史朔闰表（前 140–1911）按政权切分：先选政权、再查其年月；分裂时代各政权各用其历法（魏/蜀/吳、南北朝各朝、遼/金、南明/明鄭 等），改历年份保留官网原月名；另有「公历年份 → 并行政权」索引；1900 年起用通行历表
 - 🏛️ **Multi-Dynasty Support** – Recorded era names far beyond mainstream dynasties, including Gaochang Kingdom, Balhae Kingdom, Local dynasties of Yunnan such as Nanzhao and Dali...   
 - 📜 **Source-Cited Notes** – Era-change notes quote original historical sources with volume (卷次) references (see [Data Sources](#data-sources))
 - 🖱️ **Click-to-Jump** – Gregorian → Era results jump directly to the Era → Gregorian conversion with the year pre-filled
@@ -156,6 +157,8 @@ Image automatically available at:
 
 ### Data
 - **data.js** – 755 era records across 72 dynasties (~73KB)
+- **shuorun-historical.js** – 分政权历史朔闰历表（前 140–1911，23 段/36 政权，逐政权月朔物理日+官网原月名，~240KB）
+- **shuorun-terms.js** – 历书节气（前 105–1733，24 气/年；1645 前平气、其后定气，~93KB）
 - **LXGWWenKai-subset.woff2** – Custom font subset (381KB; regenerated 2026-08-13 to cover all CJK characters in notes — 1626 glyphs vs 1516 previously)
 - **images-12-logo-red3.png** – Logo asset
 
@@ -193,6 +196,7 @@ era-converter/
   - **出土文献/碑刻**：高昌延和残券、《龙头山渤海王室墓地》、杨温员/真恒/斤囡墓碑、故大师白氏墓碑铭、法句经写本、毕家滩衣物疏、黄氏镇墓文书、《妙法莲华经》残本、《魏受禅碑》、《夏国皇太后新建承天寺瘗佛顶骨舍利轨》
   - **现代论著**：方冬《南诏年号问题补证》（《昆明学院学报》2020年第4期）、张林《略论西夏年号与改元》、梁玉多《渤海国编年史》、魏国忠《渤海史》、张晓舟《渤海顺穆皇后墓志所见延平年号探析》、《高昌史稿·统治篇》、《曲氏高昌国史索隐——从张雄夫妇墓志谈起》（《文物》）
 - **近代年号**：民国（孙文改元通告）、洪宪（政事堂奉申令）、伪满洲国康德、太平天国（1851 闰八月初一建元）等
+- **万年历历史朔闰历表（分政权）**：前 140 – 1911 年按政权分段给出官方历法朔闰（`shuorun-historical.js`），先选政权再查年月；分裂时代各政权各用其历（魏/蜀/吳、北魏/東魏/西魏/北齊/北周、後秦/北涼、遼/金、南明/明鄭 等），政权元年正月朔之前按「承前历表」沿前朝历法。历表整理自 [ytliu0《中國歷代朔閏表》](https://ytliu0.github.io/ChineseCalendar/)（[github.com/ytliu0/ChineseCalendar](https://github.com/ytliu0/ChineseCalendar)，GPL-3.0）各时代页历表，原表据张培瑜、陈美东、薄树人、胡铁珠《中国古代历法》（科学出版社，2008）。原始表 1582-10-15（格里历改革）前以儒略历记录，本工具同以儒略历显示（1582-10 为过渡月），历表按物理日存储，日干支连续。**节气**（`shuorun-terms.js`）同据官网「曆書節氣」：1645 年前平气，1645–1733 历书定气，1734 年起与今法一致。校验：朔闰表月格干支 36,021 格、官网逐日月历表 18 个年份整年对拍、历书节气 17 个年份逐条比对，均 0 不符。历史朔日/闰月属客观史实数据，此处仅作整理与引用。
 
 ## Performance
 
@@ -218,7 +222,18 @@ era-converter/
 
 ## License
 
-页面设计、程序代码及数据编排受版权保护，版权所有 © 2026 Jingchao Ye，保留一切权利；未经许可不得用于商业发行或转售。年号、干支、公历年份等历史纪年信息属于客观历史事实，可自由检索与引用。
+**GNU General Public License v3.0 (GPL-3.0)** — Copyright © 2026 Jingchao Ye
+
+本工具（程序代码与数据编排）为自由软件，依 **GPL-3.0** 发布：可自由使用、修改与再分发，但须保留版权与许可声明、标明修改之处，并以同一许可提供相应源码。许可全文见仓库根目录 [`LICENSE`](LICENSE) 或 <https://www.gnu.org/licenses/gpl-3.0.html>。
+
+### 第三方数据与组件
+
+- **万年历历史朔闰历表**（`shuorun-historical.js`）与**历书节气**（`shuorun-terms.js`）改编自 **ytliu0《中國歷代朔閏表》**（<https://github.com/ytliu0/ChineseCalendar>，Copyright © ytliu0，GPL-3.0）；本站派生文件亦依 GPL-3.0 提供。修改说明见文件头注释：解压原表、换算为物理日 JDN、按政权分段、增补承前历表、改历年份保留原月名。
+- **农历历表** `lunar.min.js`：开源项目 **solarlunar**（MIT License，与 GPL 相容）。
+- **字体**「霞鹜文楷 LXGW WenKai」：SIL Open Font License 1.1。
+- **年号数据**：参照方诗铭《中国历史纪年表》、中国台湾《重编国语辞典修订本》附录《中国历代年号表》等公开资料整理；年号、干支、公历年份等历史纪年信息属客观历史事实，可自由检索与引用。
+
+本项目按"原样"提供，不附带任何明示或默示的担保。
 
 ## Deployment Status
 
@@ -236,6 +251,35 @@ era-converter/
 - 💬 Discussions welcome
 
 ## Changelog
+### v1.5.0 (2026-09-07)
+- **许可改为 GNU GPL-3.0**：整个项目（程序代码与数据编排）以 GPL-3.0 发布；新增仓库根目录 `LICENSE`（GPL-3.0 全文），`index.html` / `data.js` 与两个数据文件加入 GPL 版权与修改声明
+- 万年历入口新增「数据来源与许可」声明（上游 ytliu0《中國歷代朔閏表》GPL-3.0 + 本站派生数据文件同许可 + 再分发条件）
+- 页脚「版权声明」改写为 GPL-3.0 条款：可自由使用/修改/再分发、须保留声明与标明修改、以同一许可提供源码；并分列 ytliu0 历表数据、solarlunar（MIT）、霞鹜文楷（OFL）等第三方来源
+- README「License」小节重写（GPL-3.0 正文 + 第三方数据与组件清单）
+### v1.4.2 (2026-09-07)
+- **节气改用当时历法口径**：新增 `shuorun-terms.js`（官网源码 `calendricalSolarTerms()` 整理，前 105 – 1733 年 × 24 气），**1645 年前用平气**、1645–1733 用历书定气、1734 年起与今法一致；面板格内节气标记与注记均按此显示（此前一律用现代定气）
+- **修复**：政权历法名重复显示（「清·清·時憲曆」→「清·時憲曆」），36 个政权全部清理
+- **修复**：儒略历反算函数（`julianDateOfJDN`）公式错误（仅影响校验脚本，不影响页面显示）
+- 校验：`shuorun-terms.js` 与官网各年「曆書節氣」逐条对拍 17 个年份（220/221/237/384/500/600/618/700/900/1050/1120/1300/1368/1450/1581/1582/1645）**全部一致**（官网把次年小寒列于当年 12 月，本工具同样显示）
+### v1.4.1 (2026-09-07)
+- **修复**：官网唐页在武周年份把一个月历年拆成两半（`rowspan` + 夹一行续表头）导致漏月——唐 700 年缺七月～十二月与闰七月（26 个月格）；解析器改为支持「续表头 + 续行合并」
+- **新增「承前历表」**：政权元年正月朔之前的日期仍属前朝历法，改按承前历表显示（19 个政权，如清 1645 正月朔 1-28 前依明大统历、唐 618 依隋、明 1368 依元、魏 220 依东汉），并在面板注记说明；覆盖审计已无缺口
+- 修复面板注记分支串位（政权视图下误显「未选择政权」天文推算注记）
+- **校验**：与官网逐日月历表（index_chinese.html?y=YYYY）做整年逐日对拍 18 个年份（220/221/237/384/500/600/618/700/900/1050/1120/1300/1368/1450/1581/1582/1645/1800），干支与农历日**全部 0 不符**（1582 年为 355 日＝365−10，正好是格里改历略去的 10 天）；朔闰表月格干支校验 36,021 格 0 不符
+- 数据文件更新：`shuorun-historical.js`（含 `prev` 承前字段，245 KB）
+
+### v1.4.0 (2026-09-07)
+- 万年历重构为**按政权分段**的历法查询：新增 `shuorun-historical.js`（23 段历表 / 36 政权，前 140–1911），先选政权再查年月；分裂时代各政权各用其历法（魏/蜀/吳、北魏/東魏/西魏/北齊/北周、後秦/北涼、遼/金、南明/明鄭 等）
+- 保留改历年份的官网原月名（如「正(子)」「後九」），并处理「—」缺月、短行、28 天月等历史改历特例（太初改历、魏景初改历、唐 678/684/689/725/761 改朔等）
+- 新增「公历年份 → 并行政权」索引（如 1120 → 辽/金/北宋；237 → 魏/蜀汉/吴）；无历表政权（十六国、十国、渤海、南诏、西夏、太平天国等）不列入
+- 数据校验：全部 35,995 个月格的干支与物理日（儒略/格里换算）逐格核对一致（0 不符）
+- 深链：`?tab=p4&dyn=明&cal=1582-10`、`?tab=p4&year=1120`
+
+### v1.3.0 (2026-09-07)
+- 万年历 1368–1899 年农历接入**历史朔闰历表**（新增 `shuorun-ming-qing.js`）：1368–1644 明大统历、1645–1911 清时宪历，朔日与闰月按官方颁行历法给出，取代此前的纯天文推算参考值；历表据 ytliu0《中國歷代朔閏表》整理（原表据张培瑜等《中国古代历法》），页脚/面板注记/README 均已注明来源与历日基准说明
+- 万年历农历层按三段标注：1900–2100「通行历表」、1368–1899「历表」（历史朔闰历表）、其余「推算」（天文参考）
+- 万年历支持深链直达：`?tab=p4&cal=年-月`（便于分享与测试）
+- 万年历历日基准改为：格里历改革（1582-10-15）之前一律按**儒略历**显示日期（与官网原表、陈垣《二十史朔闰表》等通行史表一致，如 1581-09-28＝万历九年九月初一壬戌）；历表按物理日存储，日干支与农历层不受历日标签影响
 
 ### v1.2.0 (2026-08-12)
 - 年号总表支持表头排序：朝代 / 皇帝 / 年号 / 元年 / 末年 / 年数 / 改元各列点击升、降序切换（元年按数值排序、公元前正确前置，空值恒排最后）
@@ -264,3 +308,7 @@ era-converter/
 ---
 
 **Made with ❤️ for Chinese historical research & education**
+
+
+
+
